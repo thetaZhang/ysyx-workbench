@@ -85,19 +85,21 @@ static int cmd_info(char *args) {
 }
 
 static int cmd_x(char *args) {
-  // char *arg = strtok(NULL, " ");
-  // if (arg == NULL) {
-  //   printf("Usage: x <n> <address>\n");
-  //   return 0;
-  // }
-  // int n = atoi(arg);
-  // arg = strtok(NULL, " ");
-  // if (arg == NULL) {
-  //   printf("Usage: x <n> <address>\n");
-  //   return 0;
-  // }
-  // char *expr;
-  // uint64_t addr = strtol(arg, &expr, 16);
+  char *arg = strtok(NULL, " ");
+  if (arg == NULL) {
+    printf("Usage: x <n> <address>\n");
+    return 0;
+  }
+  int n = atoi(arg);
+  arg = strtok(NULL, " ");
+  if (arg == NULL) {
+    printf("Usage: x <n> <address>\n");
+    return 0;
+  }
+  char *expr;
+  uint64_t addr = strtol(arg, &expr, 16);
+  printf("Examining %d words at address 0x%lx:\n", n, addr);
+
   return 0;
 }
 
