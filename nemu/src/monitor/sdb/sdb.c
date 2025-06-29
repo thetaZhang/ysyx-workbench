@@ -55,6 +55,14 @@ static int cmd_q(char *args) {
 
 static int cmd_help(char *args);
 
+static int cmd_si(char *args) {
+  char *arg = strtok(NULL, " ");
+  int n = (arg == NULL) ? 1 : atoi(arg);
+  printf("Stepping %d instruction(s)...\n", n);
+  cpu_exec(n);
+  return 0;
+}
+
 static struct {
   const char *name;
   const char *description;
@@ -63,6 +71,12 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
+  { "si", "Step program instruction by instruction", cmd_si },
+  // { "info", "Display information about the program state", cmd_info },
+  // { "x", "Examine memory at a given address", cmd_x },
+  // { "p", "Evaluate an expression and print the result", cmd_p },
+  // { "w", "Set a watchpoint to monitor an expression", cmd_w },
+  // { "d", "Delete a watchpoint by its number", cmd_d }
 
   /* TODO: Add more commands */
 
