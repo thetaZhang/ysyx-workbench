@@ -84,6 +84,23 @@ static int cmd_info(char *args) {
   return 0;
 }
 
+static int cmd_x(char *args) {
+  // char *arg = strtok(NULL, " ");
+  // if (arg == NULL) {
+  //   printf("Usage: x <n> <address>\n");
+  //   return 0;
+  // }
+  // int n = atoi(arg);
+  // arg = strtok(NULL, " ");
+  // if (arg == NULL) {
+  //   printf("Usage: x <n> <address>\n");
+  //   return 0;
+  // }
+  // char *expr;
+  // uint64_t addr = strtol(arg, &expr, 16);
+  return 0;
+}
+
 static struct {
   const char *name;
   const char *description;
@@ -94,7 +111,7 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
   { "si", "Step program instruction by instruction", cmd_si },
   { "info", "Display information about the program state", cmd_info },
-  // { "x", "Examine memory at a given address", cmd_x },
+  { "x", "Examine memory at a given address", cmd_x },
   // { "p", "Evaluate an expression and print the result", cmd_p },
   // { "w", "Set a watchpoint to monitor an expression", cmd_w },
   // { "d", "Delete a watchpoint by its number", cmd_d }
