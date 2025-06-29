@@ -58,8 +58,29 @@ static int cmd_help(char *args);
 static int cmd_si(char *args) {
   char *arg = strtok(NULL, " ");
   int n = (arg == NULL) ? 1 : atoi(arg);
-  printf("Stepping %d instruction(s)...\n", n);
   cpu_exec(n);
+  return 0;
+}
+
+static int cmd_info(char *args) {
+  char *arg = strtok(NULL, " ");
+  if (arg == NULL) {
+    printf("Usage: info <option>\n");
+    printf("Options:\n");
+    printf("  r - Display registers\n");
+    printf("  w - Display watchpoints\n");
+  }
+  else if (strcmp(arg, "r") == 0) {
+    isa_reg_display();
+  }
+  else if (strcmp(arg, "w") == 0) {
+  }
+  else {
+    printf("Usage: info <option>\n");
+    printf("Options:\n");
+    printf("  r - Display registers\n");
+    printf("  w - Display watchpoints\n");
+  }
   return 0;
 }
 
@@ -72,7 +93,7 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
   { "si", "Step program instruction by instruction", cmd_si },
-  // { "info", "Display information about the program state", cmd_info },
+  { "info", "Display information about the program state", cmd_info },
   // { "x", "Examine memory at a given address", cmd_x },
   // { "p", "Evaluate an expression and print the result", cmd_p },
   // { "w", "Set a watchpoint to monitor an expression", cmd_w },
