@@ -17,6 +17,7 @@
 #include <cpu/cpu.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <memory/vaddr.h>
 #include "sdb.h"
 
 static int is_batch_mode = false;
@@ -98,7 +99,16 @@ static int cmd_x(char *args) {
   }
   char *expr;
   uint64_t addr = strtol(arg, &expr, 16);
-  printf("Examining %d words at address 0x%lx:\n", n, addr);
+  
+  for (int i = 0; i < n; i ++) {
+    printf(ANSI_FMT("%#018lx: ", ANSI_FG_CYAN), addr);
+    for (int j = 0; j < 8; j ++) {
+     word_t data = vaddr_read(addr,1);
+     addr += 1;
+     printf("0x%02x ", data & 0xff);
+    }
+    printf("\n");
+  }
 
   return 0;
 }
