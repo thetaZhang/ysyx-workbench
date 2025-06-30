@@ -118,7 +118,7 @@ static int cmd_p(char *args) {
     printf("Usage: p <expression>\n");
     return 0;
   }
-  bool success = false;
+  bool success = true;
   word_t result = expr(args, &success);
   if (!success) {
     printf("Failed to evaluate expression: %s\n", args);

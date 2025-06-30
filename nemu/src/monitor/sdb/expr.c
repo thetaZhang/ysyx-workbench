@@ -104,19 +104,18 @@ static bool make_token(char *e) {
         switch (rules[i].token_type) {
           case TK_NOTYPE:
             break;
-          case TK_NUM:
-          case TK_HEX:
-          case TK_REG:
+          case TK_NUM: case TK_HEX: case TK_REG:
             if (substr_len >= sizeof(tokens[nr_token].str)) {
               printf("Token too long at position %d\n%s\n%*.s^\n", position, e, position, "");
               return false;
             }
-          default:
+          default: {
             strncpy(tokens[nr_token].str, substr_start, substr_len);
             tokens[nr_token].str[substr_len] = '\0';
             tokens[nr_token].type = rules[i].token_type;
             nr_token++;
             break;
+          }
         }
         break;
       }
@@ -131,15 +130,155 @@ static bool make_token(char *e) {
   return true;
 }
 
+bool check_match(int p, int q, char* e) {
+  int count = 0;
+  for (int i = p; i <= q; i++) {
+    if (tokens[i].type == '(') count++;
+    else if (tokens[i].type == ')') count--;
+    if (count < 0) {
+      printf("Mismatched parentheses at positions %d and %d\n%s\n%*.s^%*.s^\n", p, q, e, p, "", q - p + 1, "");
+      return false;
+    }
+  }
+  return count == 0;   
+}
+
+bool check_parentheses(int p, int q, char* e, bool *success) {
+  if (!check_match(p, q, e)){
+    *success = false;
+    return false;
+  }
+  else if (tokens[p].type != '(' || tokens[q].type != ')') {
+    return false;
+  }
+  else {
+    if (check_match(p + 1, q - 1, e)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
+
+int find_major(int p, int q, char* e) {
+  int ret = -1;
+  int par_count = 0;
+  int last_op = 0;
+  for (int i = p; i <= q; i++) {
+    switch (tokens[i].type) {
+      case TK_NUM: case TK_HEX: case TK_REG:
+        break;
+      case '(': 
+        par_count++; break;
+      case ')': 
+        par_count--; break;
+      case '+': case '-': {
+        ret = (last_op <= 2) ? i : ret;
+        last_op = 2;
+        break;
+      }
+      case '*': case '/': {
+        ret = (last_op <= 1) ? i : ret;
+        last_op = 1;
+        break;
+      }
+      default: {
+        printf("Invalid token type at position %d: %s\n%s\n%*.s^\n", i, tokens[i].str, e, i, "");
+        ret = -1;
+        return ret;
+      }
+    }
+  }
+
+  if (par_count != 0) {
+    printf("Mismatched parentheses in expression\n%s\n%*.s^\n", e, p, "");
+    ret = -1;
+    return ret;
+  }
+  return ret;
+}
+
+word_t eval(int p, int q, char* e, bool *success){
+  if (p > q){
+    *success = false;
+    printf("Invalid expression\n");
+    return 0;
+  }
+  else if (p == q) {
+    switch (tokens[p].type) {
+      case TK_NUM:
+        return strtol(tokens[p].str, NULL, 10);
+      case TK_HEX:
+        return strtol(tokens[p].str + 2, NULL, 16);
+      case TK_REG: {
+        TODO();
+        break;
+      }
+      default:{
+        *success = false;
+        printf("Invalid token type at position %d: %s\n%s\n%*.s^\n", p, tokens[p].str, e, p, "");
+        return 0;
+      }
+    }  
+  }
+  else if (check_parentheses(p, q, e, success)) {
+    return eval(p + 1, q - 1, e, success);
+  }
+  else {
+    if (!*success) {
+      printf("Invalid expression, parentheses mismatch\n");
+      return 0;
+    }
+    int op = find_major(p, q, e);
+    if (op < 0) {
+      *success = false;
+      printf("Invalid expression, can't find major operator\n");
+      return 0;
+    }
+    word_t val1 = eval(p, op - 1, e, success);
+    if (!*success) {
+      printf("Failed to evaluate left operand from position %d to %d\n%s\n%*.s^\n", p, op - 1, e, p, "");
+      return 0;
+    }
+    word_t val2 = eval(op + 1, q, e, success);
+    if (!*success) {
+      printf("Failed to evaluate right operand from position %d to %d\n%s\n%*.s^\n", op + 1, q, e, op + 1, "");
+      return 0;
+    }
+
+    switch (tokens[op].type) {
+      case '+':
+        return val1 + val2;
+      case '-':
+        return val1 - val2;
+      case '*':
+        return val1 * val2;
+      case '/': {
+        if (val2 == 0) {
+          *success = false;
+          printf("Division by zero at position %d\n%s\n%*.s^\n", op, e, op, "");
+          return 0;
+        }
+        return val1 / val2;
+      }
+      case TK_EQ:
+        return val1 == val2;
+      default: {
+        *success = false;
+        printf("Invalid operator at position %d: %s\n%s\n%*.s^\n", op, tokens[op].str, e, op, "");
+        return 0;
+      }
+    }
+  }
+
+
+}
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
   }
-
-  /* TODO: Insert codes to evaluate the expression. */
-  //TODO();
-
-  return 0;
+  
+  return eval(0, nr_token - 1, e, success);
 }
