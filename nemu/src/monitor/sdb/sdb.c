@@ -113,6 +113,23 @@ static int cmd_x(char *args) {
   return 0;
 }
 
+static int cmd_p(char *args) {
+  if (args == NULL) {
+    printf("Usage: p <expression>\n");
+    return 0;
+  }
+  bool success = false;
+  word_t result = expr(args, &success);
+  if (!success) {
+    printf("Failed to evaluate expression: %s\n", args);
+  }
+  else {
+    printf("%u\n", result);
+  }
+
+  return 0;
+}
+
 static struct {
   const char *name;
   const char *description;
@@ -124,7 +141,7 @@ static struct {
   { "si", "Step program instruction by instruction", cmd_si },
   { "info", "Display information about the program state", cmd_info },
   { "x", "Examine memory at a given address", cmd_x },
-  // { "p", "Evaluate an expression and print the result", cmd_p },
+  { "p", "Evaluate an expression and print the result", cmd_p },
   // { "w", "Set a watchpoint to monitor an expression", cmd_w },
   // { "d", "Delete a watchpoint by its number", cmd_d }
 
