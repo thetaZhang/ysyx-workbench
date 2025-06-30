@@ -97,11 +97,15 @@ static int cmd_x(char *args) {
     printf("Usage: x <n> <address>\n");
     return 0;
   }
-  char *expr;
-  uint64_t addr = strtol(arg, &expr, 16);
-  
+  bool success = true;
+  word_t addr = expr(arg, &success);
+  if (!success) {
+    printf("Failed to evaluate address expression: %s\n", arg);
+    return 0;
+  }
+
   for (int i = 0; i < n; i ++) {
-    printf(ANSI_FMT("%#018lx: ", ANSI_FG_CYAN), addr);
+    printf(ANSI_FMT("%#018x: ", ANSI_FG_CYAN), addr);
     for (int j = 0; j < 8; j ++) {
      word_t data = vaddr_read(addr,1);
      addr += 1;
