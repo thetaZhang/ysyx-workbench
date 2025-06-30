@@ -21,7 +21,7 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_HEX
+  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_HEX, TK_REG
 
   /* TODO: Add more token types */
 
@@ -45,6 +45,7 @@ static struct rule {
   {"\\(", '('},        // left parenthesis
   {"\\)", ')'},        // right parenthesis
   {"\\b[0-9]+\\b", TK_NUM},     // number (0-9)
+  {"\\$(\\$0|ra|[sgt]p|t[0-6]|a[0-7]|s([0-9]|1[0-1])|x([0-9]|1[0-9]|2[0-9]|31))", TK_REG},
   {"\\b0[xX][0-9a-fA-F]+\\b", TK_HEX}, // hexadecimal number
 };
 
@@ -105,6 +106,7 @@ static bool make_token(char *e) {
             break;
           case TK_NUM:
           case TK_HEX:
+          case TK_REG:
             if (substr_len >= sizeof(tokens[nr_token].str)) {
               printf("Token too long at position %d\n%s\n%*.s^\n", position, e, position, "");
               return false;
