@@ -96,15 +96,26 @@ static bool make_token(char *e) {
 
         position += substr_len;
 
-        /* TODO: Now a new token is recognized with rules[i]. Add codes
+        /* Now a new token is recognized with rules[i]. Add codes
          * to record the token in the array `tokens'. For certain types
          * of tokens, some extra actions should be performed.
          */
-
         switch (rules[i].token_type) {
-          default: //TODO();
+          case TK_NOTYPE:
+            break;
+          case TK_NUM:
+          case TK_HEX:
+            if (substr_len >= sizeof(tokens[nr_token].str)) {
+              printf("Token too long at position %d\n%s\n%*.s^\n", position, e, position, "");
+              return false;
+            }
+          default:
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].str[substr_len] = '\0';
+            tokens[nr_token].type = rules[i].token_type;
+            nr_token++;
+            break;
         }
-
         break;
       }
     }
