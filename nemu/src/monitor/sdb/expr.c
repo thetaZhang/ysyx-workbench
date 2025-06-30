@@ -170,15 +170,22 @@ int find_major(int p, int q, char* e) {
         break;
       case '(': 
         par_count++; break;
-      case ')': 
-        par_count--; break;
+      case ')': {
+        if (par_count <= 0) {
+          printf("Mismatched parentheses in expression\n%s\n%*.s^\n", e, i, "");
+          ret = -1;
+          return ret;
+        }
+        par_count--; 
+        break;
+      }
       case '+': case '-': {
-        ret = (last_op <= 2) ? i : ret;
+        ret = (last_op <= 2 && par_count == 0) ? i : ret;
         last_op = 2;
         break;
       }
       case '*': case '/': {
-        ret = (last_op <= 1) ? i : ret;
+        ret = (last_op <= 1 && par_count == 0) ? i : ret;
         last_op = 1;
         break;
       }
