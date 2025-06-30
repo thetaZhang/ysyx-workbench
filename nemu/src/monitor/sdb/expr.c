@@ -102,7 +102,7 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          default: //TODO();
+          default: TODO();
         }
 
         break;
@@ -126,7 +126,7 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  TODO();
+  //TODO();
 
   return 0;
 }
