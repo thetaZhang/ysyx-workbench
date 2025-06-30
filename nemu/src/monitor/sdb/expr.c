@@ -92,8 +92,8 @@ static bool make_token(char *e) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
-        Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-            i, rules[i].regex, position, substr_len, substr_len, substr_start);
+        // Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
+        //     i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
         position += substr_len;
 
@@ -136,7 +136,7 @@ bool check_match(int p, int q, char* e) {
     if (tokens[i].type == '(') count++;
     else if (tokens[i].type == ')') count--;
     if (count < 0) {
-      printf("Mismatched parentheses at positions %d and %d\n%s\n%*.s^%*.s^\n", p, q, e, p, "", q - p + 1, "");
+      printf("Mismatched parentheses at positions %d\n%s\n%*.s^\n", p, e, p, "");
       return false;
     }
   }
