@@ -20,7 +20,7 @@
  */
 #include <regex.h>
 
-#define TOKEN_NUM 64
+#define TOKEN_NUM 32
 
 enum {
   TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_HEX, TK_REG
