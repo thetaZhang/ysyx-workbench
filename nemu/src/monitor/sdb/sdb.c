@@ -157,7 +157,6 @@ static int expr_test(){
   }
 
   fclose(fp);
-  printf("All expression tests passed.\n");
   return 0;
 }
 
