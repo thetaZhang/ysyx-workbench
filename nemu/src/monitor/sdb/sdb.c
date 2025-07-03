@@ -118,6 +118,7 @@ static int cmd_x(char *args) {
 }
 
 static int expr_test(){
+  printf("Running expression tests...\n");
 
   FILE *fp = fopen("tools/gen-expr/input", "r");
   if (fp == NULL) {
