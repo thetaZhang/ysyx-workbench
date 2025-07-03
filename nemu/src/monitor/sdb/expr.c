@@ -195,7 +195,7 @@ int find_major(int p, int q, char* e) {
         return ret;
       }
     }
-    printf("%d, %d, %d\n", par_count, last_op, ret);
+    //printf("%d, %d, %d\n", par_count, last_op, ret);
   }
 
   if (par_count != 0) {
