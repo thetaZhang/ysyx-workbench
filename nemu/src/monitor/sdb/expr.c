@@ -260,7 +260,7 @@ word_t eval(int p, int q, char* e, bool *success){
       case '+':
         return val1 + val2;
       case '-':{
-        printf ("Subtracting %u from %u at position %d\n", val2, val1, op);
+        printf ("Subtracting %d from %u at position %d\n", val2, val1, op);
         return val1 - val2;
       }
       case '*':
