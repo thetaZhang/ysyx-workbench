@@ -40,19 +40,22 @@ static int choose(int n) {
 
 static void gen_space(){
   int num = choose(4);
+  //printf("gen_space: %d\n", num);
   if (buf_ptr + 1 < buf_end){
     int len = snprintf(buf_ptr, buf_end - buf_ptr, "%*s", num, "");
     if (len > 0) {
       buf_ptr += len;
     }
   }
+  //printf("buf: %s, buf_ptr: %ld\n", buf, buf_ptr - buf);
 }
 
 static void gen_num(){
   int num = choose(INT8_MAX);
+  //printf("gen_num: %d\n", num);
   if (buf_ptr + 1 < buf_end){
     int len = 0;
-    if (choose(2) == 0) {
+    if (choose(2)) {
       len = snprintf(buf_ptr, buf_end - buf_ptr, "%d", num);
     }
     else{
@@ -62,27 +65,26 @@ static void gen_num(){
       buf_ptr += len;
     }
   }
+  //printf("buf: %s, buf_ptr: %ld\n", buf, buf_ptr - buf);
   gen_space();
 }
 
 static void gen_char(char c) {
+  //printf("gen_char: %c\n", c);
   if (buf_ptr + 1 < buf_end) {
     int len = snprintf(buf_ptr, buf_end - buf_ptr, "%c", c);
     if (len > 0) {
       buf_ptr += len;
     }
+    //printf("buf: %s, buf_ptr: %ld\n", buf, buf_ptr - buf);
   }
 }
 
-static int gen_rand_op() {
+static void gen_rand_op() {
   static const char ops[] = {'+', '-', '*', '/'};
-  if (buf_ptr + 1 < buf_end) {
-    int op_index = choose(sizeof(ops) / sizeof(ops[0]));
-    int len = snprintf(buf_ptr, buf_end - buf_ptr, " %c ", ops[op_index]);
-    if (len > 0) {
-      buf_ptr += len;
-    }
-  }
+  int op_index = choose(sizeof(ops) / sizeof(ops[0]));
+  gen_char(ops[op_index]);
+    
 }
 
 static void gen_rand_expr() {
@@ -103,6 +105,8 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {
+    buf_ptr = buf;
+
     gen_rand_expr();
 
     sprintf(code_buf, code_format, buf);
