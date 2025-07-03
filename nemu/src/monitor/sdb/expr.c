@@ -256,22 +256,30 @@ word_t eval(int p, int q, char* e, bool *success){
       return 0;
     }
 
+    word_t res;
+
     switch (tokens[op].type) {
-      case '+':
-        return val1 + val2;
+      case '+':{
+        res = val1 + val2;
+        return res;
+      }
       case '-':{
         printf ("Subtracting %d from %u at position %d\n", val2, val1, op);
-        return val1 - val2;
+        res = val1 - val2;
+        return res;
       }
-      case '*':
-        return val1 * val2;
+      case '*':{
+        res = val1 * val2;
+        return res;
+      }
       case '/': {
         if (val2 == 0) {
           *success = false;
           printf("Division by zero at position %d\n%s\n%*.s^\n", op, e, op, "");
           return 0;
         }
-        return (sword_t)val1 / (sword_t)val2;
+        res = (sword_t)val1 / (sword_t)val2;
+        return res;
       }
       case TK_EQ:
         return val1 == val2;
