@@ -209,7 +209,7 @@ int find_major(int p, int q, char* e) {
 }
 
 word_t eval(int p, int q, char* e, bool *success){
-  printf("expr: %s\n", e);
+  printf("p: %d, q: %d\n", p, q);
   if (p > q){
     *success = false;
     printf("Invalid expression\n");
