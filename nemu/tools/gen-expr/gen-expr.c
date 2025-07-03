@@ -55,7 +55,7 @@ static void gen_num(){
   //printf("gen_num: %d\n", num);
   if (buf_ptr + 5 < buf_end){
     int len = 0;
-    if (1) {
+    if (choose(2)) {
       len = snprintf(buf_ptr, buf_end - buf_ptr, "%d", num);
     }
     else{
@@ -83,7 +83,9 @@ static void gen_char(char c) {
 static void gen_rand_op() {
   static const char ops[] = {'+', '-', '*', '/'};
   int op_index = choose(sizeof(ops) / sizeof(ops[0]));
+  gen_char(' ');
   gen_char(ops[op_index]);
+  gen_char(' ');
     
 }
 
