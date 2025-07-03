@@ -227,7 +227,13 @@ word_t eval(int p, int q, char* e, bool *success){
       case TK_HEX:
         return strtol(tokens[p].str + 2, NULL, 16);
       case TK_REG: {
-        word_t reg_val = isa_reg_str2val(tokens[p].str + 1, success);
+        word_t reg_val = 0;
+        if (strcmp(tokens[p].str, "$0")) {
+          reg_val = isa_reg_str2val(tokens[p].str, success);
+        } 
+        else{
+          isa_reg_str2val(tokens[p].str + 1, success);
+        }
         if (!*success) {
           printf("Failed to get register value at position %d: %s\n%s\n%*.s^\n", p, tokens[p].str, e, p, "");
           return 0;
