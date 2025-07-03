@@ -135,7 +135,7 @@ static int expr_test(){
       break;
     }
 
-    printf("test %d: evaluating expression '%s' expecting result %u\n", test_count++, expr_in, res_ref);
+    
 
     bool success = true;
     word_t res = expr(expr_in, &success);
@@ -145,6 +145,8 @@ static int expr_test(){
       fclose(fp);
       return -1;
     }
+
+    printf("test %d: evaluating expression '%s' expecting result %u got %u\n", test_count++, expr_in, res_ref, res);
 
     if (res != res_ref) {
       printf("Expression test failed: expected %u, got %u for expression '%s'\n", res_ref, res, expr_in);
