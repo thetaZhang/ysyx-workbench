@@ -128,14 +128,14 @@ static int expr_test(){
 
   word_t res_ref;
   char expr_in[65536];
-  int test_count = 0;
+  //int test_count = 0;
   
   while(1){
     if (fscanf(fp, "%u %[^\n]", &res_ref, expr_in) != 2) {
       break;
     }
 
-    printf("Running test %d: evaluating expression '%s' expecting result %u\n", test_count, expr_in, res_ref);
+    //printf("Running test %d: evaluating expression '%s' expecting result %u\n", test_count, expr_in, res_ref);
 
     bool success = true;
     word_t res = expr(expr_in, &success);
@@ -146,7 +146,7 @@ static int expr_test(){
       return -1;
     }
 
-    printf("test %d: evaluating expression '%s' expecting result %u got %u\n", test_count++, expr_in, res_ref, res);
+    //printf("test %d: evaluating expression '%s' expecting result %u got %u\n", test_count++, expr_in, res_ref, res);
 
     if (res != res_ref) {
       printf("Expression test failed: expected %u, got %u for expression '%s'\n", res_ref, res, expr_in);

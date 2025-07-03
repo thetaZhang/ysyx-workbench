@@ -287,6 +287,6 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
-  printf("eval\n");
+  //printf("eval\n");
   return eval(0, nr_token - 1, e, success);
 }

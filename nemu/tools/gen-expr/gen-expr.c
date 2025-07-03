@@ -89,7 +89,7 @@ static void gen_rand_op() {
 
 static void gen_rand_expr() {
   static int depth = 0;
-  if (buf_ptr + 50 >= buf_end || depth > 10) {
+  if (buf_ptr + 50 >= buf_end || depth > 5) {
     gen_num();
     return;
   }
