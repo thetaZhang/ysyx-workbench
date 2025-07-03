@@ -259,8 +259,10 @@ word_t eval(int p, int q, char* e, bool *success){
     switch (tokens[op].type) {
       case '+':
         return val1 + val2;
-      case '-':
+      case '-':{
+        printf ("Subtracting %u from %u at position %d\n", val2, val1, op);
         return val1 - val2;
+      }
       case '*':
         return val1 * val2;
       case '/': {
