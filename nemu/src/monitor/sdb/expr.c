@@ -267,7 +267,7 @@ word_t eval(int p, int q, char* e, bool *success){
           printf("Division by zero at position %d\n%s\n%*.s^\n", op, e, op, "");
           return 0;
         }
-        return val1 / val2;
+        return (sword_t)val1 / (sword_t)val2;
       }
       case TK_EQ:
         return val1 == val2;
