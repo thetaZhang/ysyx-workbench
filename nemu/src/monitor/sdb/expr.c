@@ -151,12 +151,14 @@ bool check_parentheses(int p, int q, char* e, bool *success) {
     return false;
   }
   else if (tokens[p].type != '(' || tokens[q].type != ')') {
+    printf("no parentheses surround\n");
     return false;
   }
   else {
     if (check_match(p + 1, q - 1, e)) {
       return true;
     } else {
+      printf("mismatched parentheses inside\n");
       return false;
     }
   }
