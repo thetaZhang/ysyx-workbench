@@ -163,6 +163,7 @@ bool check_parentheses(int p, int q, char* e, bool *success) {
 }
 
 int find_major(int p, int q, char* e) {
+  printf("find_major p: %d, q: %d\n", p, q);
   int ret = -1;
   int par_count = 0;
   int last_op = 0;
@@ -209,7 +210,7 @@ int find_major(int p, int q, char* e) {
 }
 
 word_t eval(int p, int q, char* e, bool *success){
-  printf("p: %d, q: %d\n", p, q);
+  printf("eval p: %d, q: %d\n", p, q);
   if (p > q){
     *success = false;
     printf("Invalid expression\n");
