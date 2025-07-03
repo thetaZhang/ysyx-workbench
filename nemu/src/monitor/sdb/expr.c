@@ -163,7 +163,7 @@ bool check_parentheses(int p, int q, char* e, bool *success) {
 }
 
 int find_major(int p, int q, char* e) {
-  printf("find_major p: %d, q: %d\n", p, q);
+  //printf("find_major p: %d, q: %d\n", p, q);
   int ret = -1;
   int par_count = 0;
   int last_op = 0;
@@ -189,7 +189,7 @@ int find_major(int p, int q, char* e) {
       }
       case '*': case '/': {
         ret = (last_op <= 1 && par_count == 0) ? i : ret;
-        last_op = (par_count == 0) ? 1 : last_op;
+        last_op = (par_count == 0 && last_op <= 1) ? 1 : last_op;
         break;
       }
       default: {
@@ -206,12 +206,12 @@ int find_major(int p, int q, char* e) {
     ret = -1;
     return ret;
   }
-  printf("find_major result: %d\n", ret);
+  //printf("find_major result: %d\n", ret);
   return ret;
 }
 
 word_t eval(int p, int q, char* e, bool *success){
-  printf("eval p: %d, q: %d\n", p, q);
+  //printf("eval p: %d, q: %d\n", p, q);
   if (p > q){
     *success = false;
     printf("Invalid expression\n");
@@ -264,23 +264,23 @@ word_t eval(int p, int q, char* e, bool *success){
     switch (tokens[op].type) {
       case '+':{
         res = val1 + val2;
-        printf("val1: %u, val2: %u, res: %u, op: %c\n", val1, val2, res, tokens[op].type);
+        //printf("val1: %u, val2: %u, res: %u, op: %c\n", val1, val2, res, tokens[op].type);
         return res;
       }
       case '-':{
         res = val1 - val2;
-        printf("val1: %u, val2: %u, res: %u, op: %c\n", val1, val2, res, tokens[op].type);
+        //printf("val1: %u, val2: %u, res: %u, op: %c\n", val1, val2, res, tokens[op].type);
         return res;
       }
       case '*':{
         res = val1 * val2;
-        printf("val1: %u, val2: %u, res: %u, op: %c\n", val1, val2, res, tokens[op].type);
+        //printf("val1: %u, val2: %u, res: %u, op: %c\n", val1, val2, res, tokens[op].type);
         return res;
       }
       case '/': {
         if (val2 == 0) {
           *success = false;
-          printf("Division by zero at position %d\n%s\n%*.s^\n", op, e, op, "");
+          //printf("Division by zero at position %d\n%s\n%*.s^\n", op, e, op, "");
           return 0;
         }
         res = (sword_t)val1 / (sword_t)val2;
