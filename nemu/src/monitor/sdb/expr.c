@@ -181,12 +181,12 @@ int find_major(int p, int q, char* e) {
       }
       case '+': case '-': {
         ret = (last_op <= 2 && par_count == 0) ? i : ret;
-        last_op = 2;
+        last_op = (par_count == 0) ? 2 : last_op;
         break;
       }
       case '*': case '/': {
         ret = (last_op <= 1 && par_count == 0) ? i : ret;
-        last_op = 1;
+        last_op = (par_count == 0) ? 1 : last_op;
         break;
       }
       default: {
