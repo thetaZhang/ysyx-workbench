@@ -261,6 +261,7 @@ word_t eval(int p, int q, char* e, bool *success){
     switch (tokens[op].type) {
       case '+':{
         res = val1 + val2;
+        printf("val1: %u, val2: %u, res: %u, op: %c\n", val1, val2, res, tokens[op].type);
         return res;
       }
       case '-':{
