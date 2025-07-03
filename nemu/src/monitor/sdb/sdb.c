@@ -135,7 +135,7 @@ static int expr_test(){
       break;
     }
 
-    
+    printf("Running test %d: evaluating expression '%s' expecting result %u\n", test_count, expr_in, res_ref);
 
     bool success = true;
     word_t res = expr(expr_in, &success);
