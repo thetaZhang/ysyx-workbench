@@ -146,20 +146,20 @@ bool check_match(int p, int q, char* e, bool is_log) {
 }
 
 bool check_parentheses(int p, int q, char* e, bool *success) {
-  printf("check_parentheses p: %d, q: %d\n", p, q);
+  //printf("check_parentheses p: %d, q: %d\n", p, q);
   if (!check_match(p, q, e, true)){
     *success = false;
     return false;
   }
   else if (tokens[p].type != '(' || tokens[q].type != ')') {
-    printf("no parentheses surround\n");
+    //printf("no parentheses surround\n");
     return false;
   }
   else {
     if (check_match(p + 1, q - 1, e, false)) {
       return true;
     } else {
-      printf("mismatched parentheses inside\n");
+      //printf("mismatched parentheses inside\n");
       return false;
     }
   }
