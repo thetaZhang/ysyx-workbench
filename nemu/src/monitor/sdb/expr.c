@@ -20,6 +20,8 @@
  */
 #include <regex.h>
 
+#define TOKEN_NUM 32
+
 enum {
   TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_HEX, TK_REG
 
@@ -75,7 +77,7 @@ typedef struct token {
   char str[32];
 } Token;
 
-static Token tokens[32] __attribute__((used)) = {};
+static Token tokens[TOKEN_NUM] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 static bool make_token(char *e) {
@@ -96,11 +98,11 @@ static bool make_token(char *e) {
         //     i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
         position += substr_len;
-
-        /* Now a new token is recognized with rules[i]. Add codes
-         * to record the token in the array `tokens'. For certain types
-         * of tokens, some extra actions should be performed.
-         */
+        
+        if (nr_token >= TOKEN_NUM) {
+          printf("Too many tokens, max is %d\n", TOKEN_NUM);
+          return false;
+        }
         switch (rules[i].token_type) {
           case TK_NOTYPE:
             break;
