@@ -117,9 +117,55 @@ static int cmd_x(char *args) {
   return 0;
 }
 
+static int expr_test(){
+
+  FILE *fp = fopen("tools/gen-expr/input", "r");
+  if (fp == NULL) {
+    printf("Failed to open expression test file.\n");
+    return -1;
+  }
+
+  word_t res_ref;
+  char expr_in[65536];
+  bool success = true;
+
+  while(1){
+    if (fscanf(fp, "%u %[^\n]", &res_ref, expr_in) != 2) {
+      break;
+    }
+
+    word_t res = expr(expr_in, &success);
+    if (!success) {
+      printf("Failed to evaluate test expression: %s\n", expr_in);
+      fclose(fp);
+      return -1;
+    }
+
+    if (res != res_ref) {
+      printf("Expression test failed: expected %u, got %u for expression '%s'\n", res_ref, res, expr_in);
+      fclose(fp);
+      return -1;
+    }
+    
+  }
+
+  fclose(fp);
+  printf("All expression tests passed.\n");
+  return 0;
+}
+
 static int cmd_p(char *args) {
   if (args == NULL) {
     printf("Usage: p <expression>\n");
+    return 0;
+  }
+  if (strcmp(args, "test") == 0){
+    if (expr_test() < 0) {
+      printf("Expression test failed.\n");
+    }
+    else {
+      printf("Expression test passed.\n");
+    }
     return 0;
   }
   bool success = true;
@@ -133,6 +179,7 @@ static int cmd_p(char *args) {
 
   return 0;
 }
+
 
 static struct {
   const char *name;
