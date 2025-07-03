@@ -146,6 +146,7 @@ bool check_match(int p, int q, char* e) {
 }
 
 bool check_parentheses(int p, int q, char* e, bool *success) {
+  printf("check_parentheses p: %d, q: %d\n", p, q);
   if (!check_match(p, q, e)){
     *success = false;
     return false;
