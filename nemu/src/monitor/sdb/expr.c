@@ -132,13 +132,13 @@ static bool make_token(char *e) {
   return true;
 }
 
-bool check_match(int p, int q, char* e) {
+bool check_match(int p, int q, char* e, bool is_log) {
   int count = 0;
   for (int i = p; i <= q; i++) {
     if (tokens[i].type == '(') count++;
     else if (tokens[i].type == ')') count--;
     if (count < 0) {
-      printf("Mismatched parentheses at positions %d\n%s\n%*.s^\n", p, e, p, "");
+      if (is_log) printf("Mismatched parentheses at positions %d\n%s\n%*.s^\n", p, e, p, "");
       return false;
     }
   }
@@ -147,7 +147,7 @@ bool check_match(int p, int q, char* e) {
 
 bool check_parentheses(int p, int q, char* e, bool *success) {
   printf("check_parentheses p: %d, q: %d\n", p, q);
-  if (!check_match(p, q, e)){
+  if (!check_match(p, q, e, true)){
     *success = false;
     return false;
   }
@@ -156,7 +156,7 @@ bool check_parentheses(int p, int q, char* e, bool *success) {
     return false;
   }
   else {
-    if (check_match(p + 1, q - 1, e)) {
+    if (check_match(p + 1, q - 1, e, false)) {
       return true;
     } else {
       printf("mismatched parentheses inside\n");
