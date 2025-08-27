@@ -248,6 +248,7 @@ word_t eval(int p, int q, char* e, bool *success){
         word_t reg_val = 0;
         printf("reg token: %s\n", tokens[p].str);
         if (strcmp(tokens[p].str, "$0")) {
+          printf("get reg $0\n");
           reg_val = isa_reg_str2val(tokens[p].str, success);
         } 
         else{
