@@ -250,7 +250,7 @@ word_t eval(int p, int q, char* e, bool *success){
           reg_val = isa_reg_str2val(tokens[p].str, success);
         } 
         else{
-          isa_reg_str2val(tokens[p].str + 1, success);
+          reg_val = isa_reg_str2val(tokens[p].str + 1, success);
         }
         if (!*success) {
           printf("Failed to get register value at position %d: %s\n%s\n%*.s^\n", p, tokens[p].str, e, p, "");
