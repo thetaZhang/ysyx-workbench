@@ -23,7 +23,7 @@
 #define TOKEN_NUM 64
 
 enum {
-  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_HEX, TK_REG
+  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_HEX, TK_REG, TK_NEQ, TK_AND, TK_OR
 
   /* TODO: Add more token types */
 
@@ -44,6 +44,9 @@ static struct rule {
   {"\\*", '*'},        // multiply
   {"/", '/'},          // divide
   {"==", TK_EQ},        // equal
+  {"!=", TK_NEQ},       // not equal
+  {"&&", TK_AND},       // logical and
+  {"\\|\\|", TK_OR},    // logical or
   {"\\(", '('},        // left parenthesis
   {"\\)", ')'},        // right parenthesis
   {"\\b[0-9]+\\b", TK_NUM},     // number (0-9)
@@ -185,9 +188,14 @@ int find_major(int p, int q, char* e) {
         par_count--; 
         break;
       }
+      case TK_EQ: case TK_NEQ:{
+        ret = (last_op <= 3 && par_count == 0) ? i : ret;
+        last_op = (par_count == 0 && last_op <= 3) ? 3 : last_op;
+        break;
+      } 
       case '+': case '-': {
         ret = (last_op <= 2 && par_count == 0) ? i : ret;
-        last_op = (par_count == 0) ? 2 : last_op;
+        last_op = (par_count == 0 && last_op <= 2) ? 2 : last_op;
         break;
       }
       case '*': case '/': {
@@ -299,8 +307,14 @@ word_t eval(int p, int q, char* e, bool *success){
         res = (sword_t)val1 / (sword_t)val2;
         return res;
       }
-      case TK_EQ:
-        return val1 == val2;
+      case TK_EQ:{
+        res = val1 == val2;
+        return res;
+      }
+      case TK_NEQ:{
+        res = val1 != val2;
+        return res;
+      }
       default: {
         *success = false;
         printf("Invalid operator at position %d: %s\n%s\n%*.s^\n", op, tokens[op].str, e, op, "");
