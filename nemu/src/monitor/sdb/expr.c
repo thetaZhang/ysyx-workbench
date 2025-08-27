@@ -188,7 +188,17 @@ int find_major(int p, int q, char* e) {
         par_count--; 
         break;
       }
-      case TK_EQ: case TK_NEQ:{
+      case TK_OR: {
+        ret = (last_op <= 5 && par_count == 0) ? i : ret;
+        last_op = (par_count == 0 && last_op <= 5) ? 5 : last_op;
+        break;
+      }
+      case TK_AND: {
+        ret = (last_op <= 4 && par_count == 0) ? i : ret;
+        last_op = (par_count == 0 && last_op <= 4) ? 4 : last_op;
+        break;
+      }
+      case TK_EQ: case TK_NEQ: {
         ret = (last_op <= 3 && par_count == 0) ? i : ret;
         last_op = (par_count == 0 && last_op <= 3) ? 3 : last_op;
         break;
@@ -313,6 +323,14 @@ word_t eval(int p, int q, char* e, bool *success){
       }
       case TK_NEQ:{
         res = val1 != val2;
+        return res;
+      }
+      case TK_AND:{
+        res = val1 && val2;
+        return res;
+      }
+      case TK_OR:{
+        res = val1 || val2;
         return res;
       }
       default: {
