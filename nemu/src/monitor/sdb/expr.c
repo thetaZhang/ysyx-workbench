@@ -246,9 +246,9 @@ word_t eval(int p, int q, char* e, bool *success){
         return strtol(tokens[p].str + 2, NULL, 16);
       case TK_REG: {
         word_t reg_val = 0;
-        printf("reg token: %s\n", tokens[p].str);
-        if (strcmp(tokens[p].str, "$0")) {
-          printf("get reg $0\n");
+        //printf("reg token: %s\n", tokens[p].str);
+        if (strcmp(tokens[p].str, "$0") == 0) {
+          //printf("get reg $0\n");
           reg_val = isa_reg_str2val(tokens[p].str, success);
         } 
         else{
