@@ -17,6 +17,7 @@
 #include <cpu/cpu.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <memory/vaddr.h>
 #include "sdb.h"
 
 static int is_batch_mode = false;
@@ -55,6 +56,137 @@ static int cmd_q(char *args) {
 
 static int cmd_help(char *args);
 
+static int cmd_si(char *args) {
+  char *arg = strtok(NULL, " ");
+  int n = (arg == NULL) ? 1 : atoi(arg);
+  cpu_exec(n);
+  return 0;
+}
+
+static int cmd_info(char *args) {
+  char *arg = strtok(NULL, " ");
+  if (arg == NULL) {
+    printf("Usage: info <option>\n");
+    printf("Options:\n");
+    printf("  r - Display registers\n");
+    printf("  w - Display watchpoints\n");
+  }
+  else if (strcmp(arg, "r") == 0) {
+    isa_reg_display();
+  }
+  else if (strcmp(arg, "w") == 0) {
+  }
+  else {
+    printf("Usage: info <option>\n");
+    printf("Options:\n");
+    printf("  r - Display registers\n");
+    printf("  w - Display watchpoints\n");
+  }
+  return 0;
+}
+
+static int cmd_x(char *args) {
+  char *arg = strtok(NULL, " ");
+  if (arg == NULL) {
+    printf("Usage: x <n> <address>\n");
+    return 0;
+  }
+  int n = atoi(arg);
+  arg = strtok(NULL, " ");
+  if (arg == NULL) {
+    printf("Usage: x <n> <address>\n");
+    return 0;
+  }
+  bool success = true;
+  word_t addr = expr(arg, &success);
+  if (!success) {
+    printf("Failed to evaluate address expression: %s\n", arg);
+    return 0;
+  }
+
+  for (int i = 0; i < n; i ++) {
+    printf(ANSI_FMT("%#018x: ", ANSI_FG_CYAN), addr);
+    for (int j = 0; j < 8; j ++) {
+     word_t data = vaddr_read(addr,1);
+     addr += 1;
+     printf("0x%02x ", data & 0xff);
+    }
+    printf("\n");
+  }
+
+  return 0;
+}
+
+static int expr_test(){
+  printf("Running expression tests...\n");
+
+  FILE *fp = fopen("tools/gen-expr/input", "r");
+  if (fp == NULL) {
+    printf("Failed to open expression test file.\n");
+    return -1;
+  }
+
+  word_t res_ref;
+  char expr_in[65536];
+  //int test_count = 0;
+  
+  while(1){
+    if (fscanf(fp, "%u %[^\n]", &res_ref, expr_in) != 2) {
+      break;
+    }
+
+    //printf("Running test %d: evaluating expression '%s' expecting result %u\n", test_count, expr_in, res_ref);
+
+    bool success = true;
+    word_t res = expr(expr_in, &success);
+
+    if (!success) {
+      printf("Failed to evaluate test expression: %s\n", expr_in);
+      fclose(fp);
+      return -1;
+    }
+
+    //printf("test %d: evaluating expression '%s' expecting result %u got %u\n", test_count++, expr_in, res_ref, res);
+
+    if (res != res_ref) {
+      printf("Expression test failed: expected %u, got %u for expression '%s'\n", res_ref, res, expr_in);
+      fclose(fp);
+      return -1;
+    }
+    
+  }
+
+  fclose(fp);
+  return 0;
+}
+
+static int cmd_p(char *args) {
+  if (args == NULL) {
+    printf("Usage: p <expression>\n");
+    return 0;
+  }
+  if (strcmp(args, "test") == 0){
+    if (expr_test() < 0) {
+      printf("Expression test failed.\n");
+    }
+    else {
+      printf("Expression test passed.\n");
+    }
+    return 0;
+  }
+  bool success = true;
+  word_t result = expr(args, &success);
+  if (!success) {
+    printf("Failed to evaluate expression: %s\n", args);
+  }
+  else {
+    printf("%u\n", result);
+  }
+
+  return 0;
+}
+
+
 static struct {
   const char *name;
   const char *description;
@@ -63,6 +195,12 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
+  { "si", "Step program instruction by instruction", cmd_si },
+  { "info", "Display information about the program state", cmd_info },
+  { "x", "Examine memory at a given address", cmd_x },
+  { "p", "Evaluate an expression and print the result", cmd_p },
+  // { "w", "Set a watchpoint to monitor an expression", cmd_w },
+  // { "d", "Delete a watchpoint by its number", cmd_d }
 
   /* TODO: Add more commands */
 

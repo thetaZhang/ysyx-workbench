@@ -31,8 +31,76 @@ static char *code_format =
 "  return 0; "
 "}";
 
+static char *buf_ptr = NULL;
+static char *buf_end = buf + (sizeof(buf)/sizeof(buf[0]));
+
+static int choose(int n) {
+  return rand() % n;
+}
+
+static void gen_space(){
+  int num = choose(4);
+  //printf("gen_space: %d\n", num);
+  if (buf_ptr + (num - 1) + 1 < buf_end){
+    int len = snprintf(buf_ptr, buf_end - buf_ptr, "%*s", num, "");
+    if (len > 0) {
+      buf_ptr += len;
+    }
+  }
+  //printf("buf: %s, buf_ptr: %ld\n", buf, buf_ptr - buf);
+}
+
+static void gen_num(){
+  int num = choose(INT8_MAX);
+  //printf("gen_num: %d\n", num);
+  if (buf_ptr + 5 < buf_end){
+    int len = 0;
+    if (choose(2)) {
+      len = snprintf(buf_ptr, buf_end - buf_ptr, "%d", num);
+    }
+    else{
+      len = snprintf(buf_ptr, buf_end - buf_ptr, "0x%x", num);
+    }
+    if (len > 0) {
+      buf_ptr += len;
+    }
+  }
+  //printf("buf: %s, buf_ptr: %ld\n", buf, buf_ptr - buf);
+  gen_space();
+}
+
+static void gen_char(char c) {
+  //printf("gen_char: %c\n", c);
+  if (buf_ptr + 1 < buf_end) {
+    int len = snprintf(buf_ptr, buf_end - buf_ptr, "%c", c);
+    if (len > 0) {
+      buf_ptr += len;
+    }
+    //printf("buf: %s, buf_ptr: %ld\n", buf, buf_ptr - buf);
+  }
+}
+
+static void gen_rand_op() {
+  static const char ops[] = {'+', '-', '*', '/'};
+  int op_index = choose(sizeof(ops) / sizeof(ops[0]));
+  gen_char(' ');
+  gen_char(ops[op_index]);
+  gen_char(' ');
+    
+}
+
 static void gen_rand_expr() {
-  buf[0] = '\0';
+  static int depth = 0;
+  if (buf_ptr + 50 >= buf_end || depth > 4) {
+    gen_num();
+    return;
+  }
+  switch (choose(3))
+  {
+  case 0: gen_num(); break;
+  case 1: gen_char('('); depth ++; gen_rand_expr(); depth --; gen_char(')'); break;
+  default: depth ++; gen_rand_expr(); gen_rand_op(); gen_rand_expr(); depth --; break;
+  }
 }
 
 int main(int argc, char *argv[]) {
@@ -44,6 +112,9 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {
+    memset(buf, 0, sizeof(buf));
+    buf_ptr = buf;
+
     gen_rand_expr();
 
     sprintf(code_buf, code_format, buf);
@@ -53,7 +124,7 @@ int main(int argc, char *argv[]) {
     fputs(code_buf, fp);
     fclose(fp);
 
-    int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
+    int ret = system("gcc /tmp/.code.c -o /tmp/.expr -Werror=div-by-zero");
     if (ret != 0) continue;
 
     fp = popen("/tmp/.expr", "r");
