@@ -214,7 +214,7 @@ int find_major(int p, int q, char* e) {
         break;
       }
       case TK_NEG:{
-        ret = (last_op <= 1 && par_count == 0) ? i : ret;
+        ret = (last_op < 1 && par_count == 0) ? i : ret; // Right-associative
         last_op = (par_count == 0 && last_op <= 1) ? 1 : last_op;
         break;
       }
