@@ -359,7 +359,7 @@ word_t eval(int p, int q, char* e, bool *success){
 }
 
 static bool check_single_op(int last_op){
-  static const int certain_type[] = {'+', '-', '*', '/', '(', TK_EQ, TK_NEQ, TK_AND, TK_OR};
+  static const int certain_type[] = {'+', '-', '*', '/', '(', TK_EQ, TK_NEQ, TK_AND, TK_OR, TK_NEG, TK_POS, TK_DEREF};
   int len = sizeof(certain_type) / sizeof(certain_type[0]);
   for (int i = 0; i < len; i++) {
     if (last_op == certain_type[i]) {
