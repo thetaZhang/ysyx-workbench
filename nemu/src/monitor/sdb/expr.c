@@ -175,7 +175,7 @@ int find_major(int p, int q, char* e) {
   int last_op = 0;
   for (int i = p; i <= q; i++) {
     switch (tokens[i].type) {
-      case TK_NUM: case TK_HEX: case TK_REG: case TK_NEG:
+      case TK_NUM: case TK_HEX: case TK_REG:
         break;
       case '(': 
         par_count++; break;
@@ -189,26 +189,31 @@ int find_major(int p, int q, char* e) {
         break;
       }
       case TK_OR: {
+        ret = (last_op <= 6 && par_count == 0) ? i : ret;
+        last_op = (par_count == 0 && last_op <= 6) ? 6 : last_op;
+        break;
+      }
+      case TK_AND: {
         ret = (last_op <= 5 && par_count == 0) ? i : ret;
         last_op = (par_count == 0 && last_op <= 5) ? 5 : last_op;
         break;
       }
-      case TK_AND: {
+      case TK_EQ: case TK_NEQ: {
         ret = (last_op <= 4 && par_count == 0) ? i : ret;
         last_op = (par_count == 0 && last_op <= 4) ? 4 : last_op;
         break;
-      }
-      case TK_EQ: case TK_NEQ: {
+      } 
+      case '+': case '-': {
         ret = (last_op <= 3 && par_count == 0) ? i : ret;
         last_op = (par_count == 0 && last_op <= 3) ? 3 : last_op;
         break;
-      } 
-      case '+': case '-': {
+      }
+      case '*': case '/': {
         ret = (last_op <= 2 && par_count == 0) ? i : ret;
         last_op = (par_count == 0 && last_op <= 2) ? 2 : last_op;
         break;
       }
-      case '*': case '/': {
+      case TK_NEG:{
         ret = (last_op <= 1 && par_count == 0) ? i : ret;
         last_op = (par_count == 0 && last_op <= 1) ? 1 : last_op;
         break;
@@ -281,12 +286,15 @@ word_t eval(int p, int q, char* e, bool *success){
       printf("Invalid expression, can't find major operator\n");
       return 0;
     }
-    word_t val1 = eval(p, op - 1, e, success);
-    if (!*success) {
-      printf("Failed to evaluate left operand from position %d to %d\n%s\n%*.s^\n", p, op - 1, e, p, "");
-      return 0;
+    word_t val1 = 0, val2 = 0;
+    if (tokens[op].type != TK_NEG && tokens[op].type != TK_POS && tokens[op].type != TK_DEREF) {
+      val1 = eval(p, op - 1, e, success);
+      if (!*success) {
+        printf("Failed to evaluate left operand from position %d to %d\n%s\n%*.s^\n", p, op - 1, e, p, "");
+        return 0;
+      }
     }
-    word_t val2 = eval(op + 1, q, e, success);
+    val2 = eval(op + 1, q, e, success);
     if (!*success) {
       printf("Failed to evaluate right operand from position %d to %d\n%s\n%*.s^\n", op + 1, q, e, op + 1, "");
       return 0;
@@ -333,6 +341,10 @@ word_t eval(int p, int q, char* e, bool *success){
       }
       case TK_OR:{
         res = val1 || val2;
+        return res;
+      }
+      case TK_NEG:{
+        res = -val2;
         return res;
       }
       default: {
