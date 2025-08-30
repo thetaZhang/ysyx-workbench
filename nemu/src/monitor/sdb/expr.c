@@ -15,6 +15,8 @@
 
 #include <isa.h>
 
+#include <memory/vaddr.h> // for vaddr_read
+
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
@@ -213,7 +215,7 @@ int find_major(int p, int q, char* e) {
         last_op = (par_count == 0 && last_op <= 2) ? 2 : last_op;
         break;
       }
-      case TK_NEG:{
+      case TK_NEG: case TK_POS: case TK_DEREF: {
         ret = (last_op < 1 && par_count == 0) ? i : ret; // Right-associative
         last_op = (par_count == 0 && last_op <= 1) ? 1 : last_op;
         break;
@@ -347,6 +349,14 @@ word_t eval(int p, int q, char* e, bool *success){
         res = -val2;
         return res;
       }
+      case TK_POS:{
+        res = val2;
+        return res;
+      }
+      case TK_DEREF:{
+        res = vaddr_read(val2, sizeof(word_t)/sizeof(uint8_t));
+        return res;
+      }
       default: {
         *success = false;
         printf("Invalid operator at position %d: %s\n%s\n%*.s^\n", op, tokens[op].str, e, op, "");
@@ -383,6 +393,32 @@ word_t expr(char *e, bool *success) {
         for (int j = i - 1; j >= 0; j--){
           if (tokens[j].type != TK_NOTYPE){
             tokens[i].type = (check_single_op(tokens[j].type)) ? TK_NEG : tokens[i].type;
+            break;
+          }
+        }
+      }
+    }
+    if (tokens[i].type == '+' ) {
+      if (i == 0) {
+        tokens[i].type = TK_POS;
+      }
+      else {
+        for (int j = i - 1; j >= 0; j--){
+          if (tokens[j].type != TK_NOTYPE){
+            tokens[i].type = (check_single_op(tokens[j].type)) ? TK_POS : tokens[i].type;
+            break;
+          }
+        }
+      }
+    }
+    if (tokens[i].type == '*' ) {
+      if (i == 0) {
+        tokens[i].type = TK_DEREF;
+      }
+      else {
+        for (int j = i - 1; j >= 0; j--){
+          if (tokens[j].type != TK_NOTYPE){
+            tokens[i].type = (check_single_op(tokens[j].type)) ? TK_DEREF : tokens[i].type;
             break;
           }
         }
