@@ -175,7 +175,7 @@ int find_major(int p, int q, char* e) {
   int last_op = 0;
   for (int i = p; i <= q; i++) {
     switch (tokens[i].type) {
-      case TK_NUM: case TK_HEX: case TK_REG:
+      case TK_NUM: case TK_HEX: case TK_REG: case TK_NEG:
         break;
       case '(': 
         par_count++; break;
