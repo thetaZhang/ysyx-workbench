@@ -364,17 +364,17 @@ word_t expr(char *e, bool *success) {
   }
   for (int i = 0; i < nr_token; i ++) {
     if (tokens[i].type == '-' ) {
-      for (int j = i - 1; j >= 0; j--){
-        if ((j == 0)){
-          tokens[j].type = TK_NEG;
-          break;
-        }
-        else if (tokens[j].type != TK_NOTYPE){
-          tokens[i].type = (check_single_op(tokens[j].type)) ? TK_NEG : tokens[i].type;
-          break;
+      if (i == 0) {
+        tokens[i].type = TK_NEG;
+      }
+      else {
+        for (int j = i - 1; j >= 0; j--){
+          if (tokens[j].type != TK_NOTYPE){
+            tokens[i].type = (check_single_op(tokens[j].type)) ? TK_NEG : tokens[i].type;
+            break;
+          }
         }
       }
-      
     }
   }
   //printf("eval\n");
