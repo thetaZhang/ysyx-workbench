@@ -71,9 +71,10 @@ static void free_wp(WP *wp){
 }
 
 void wp_add(char* expression){
-  printf("here/%s\n", expression);
+  
   bool success = true;
   word_t val = expr(expression, &success);
+  printf("here/%u\n", val);
   if (!success) {
     printf("Failed to evaluate watchpoint expression: %s\n", expression);
     return;
