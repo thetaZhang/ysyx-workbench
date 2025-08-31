@@ -74,12 +74,13 @@ void wp_add(char* expression){
   
   bool success = true;
   word_t val = expr(expression, &success);
-  printf("here/%u\n", val);
+  
   if (!success) {
     printf("Failed to evaluate watchpoint expression: %s\n", expression);
     return;
   }
   WP* wp = new_wp();
+  printf("here/%u\n", val);
   strcpy(wp->expr, expression);
   wp->last_val = val;
   printf("Watchpoint %d: %s\n", wp->NO, wp->expr);
