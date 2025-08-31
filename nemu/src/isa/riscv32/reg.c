@@ -30,11 +30,11 @@ void isa_reg_display() {
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-  printf("input reg name: %s\n", s);
+  //printf("input reg name: %s\n", s);
   for (int i = 0; i < ARRLEN(regs); i++) {
     if (strcmp(s, regs[i]) == 0) {
       *success = true;
-      printf("get reg\n");
+      //printf("get reg\n");
       return cpu.gpr[i];
     }
   }
