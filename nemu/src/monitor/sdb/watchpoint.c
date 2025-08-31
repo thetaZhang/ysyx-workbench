@@ -85,12 +85,12 @@ void wp_add(char* expression){
     return;
   }
   WP* wp = new_wp();
-  // wp -> expr = malloc(strlen(expression) + 1);
-  // if (!wp -> expr) {
-  //   printf("Failed to allocate memory for watchpoint expression: %s\n", expression);
-  //   free_wp(wp);
-  //   return;
-  // }
+  wp -> expr = malloc(strlen(expression) + 1);
+  if (!wp -> expr) {
+    printf("Failed to allocate memory for watchpoint expression: %s\n", expression);
+    free_wp(wp);
+    return;
+  }
   strcpy(wp->expr, expression);
   wp->last_val = val;
   printf("Watchpoint %d: %s\n", wp->NO, wp->expr);
