@@ -192,10 +192,18 @@ static int cmd_w(char *args) {
     printf("Usage: w <expression>\n");
     return 0;
   }
+  wp_add(args);
   return 0;
 }
 
 static int cmd_d(char *args) {
+  char *arg = strtok(NULL, " ");
+  if (arg == NULL) {
+    printf("Usage: d <watchpoint_number>\n");
+    return 0;
+  }
+  int n = atoi(arg);
+  wp_remove(n);
   return 0;
 }
 

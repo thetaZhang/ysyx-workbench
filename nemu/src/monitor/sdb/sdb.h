@@ -20,7 +20,7 @@
 
 word_t expr(char *e, bool *success);
 
-void wp_add(char* expr, word_t val);
+void wp_add(char* expression);
 void wp_remove(int no);
 bool wp_difftest();
 void wp_display();

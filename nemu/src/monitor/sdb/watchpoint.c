@@ -70,9 +70,16 @@ static void free_wp(WP *wp){
   free_ = wp;
 }
 
-void wp_add(char* expr, word_t val){
+void wp_add(char* expression){
+
+  bool success = true;
+  word_t val = expr(expression, &success);
+  if (!success) {
+    printf("Failed to evaluate watchpoint expression: %s\n", expression);
+    return;
+  }
   WP* wp = new_wp();
-  strcpy(wp->expr, expr);
+  strcpy(wp->expr, expression);
   wp->last_val = val;
   printf("Watchpoint %d: %s\n", wp->NO, wp->expr);
 }
