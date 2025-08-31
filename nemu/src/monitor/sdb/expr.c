@@ -15,6 +15,8 @@
 
 #include <isa.h>
 
+#include <memory/vaddr.h> // for vaddr_read
+
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
@@ -23,7 +25,7 @@
 #define TOKEN_NUM 64
 
 enum {
-  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_HEX, TK_REG
+  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_HEX, TK_REG, TK_NEQ, TK_AND, TK_OR, TK_NEG, TK_POS, TK_DEREF
 
   /* TODO: Add more token types */
 
@@ -44,10 +46,13 @@ static struct rule {
   {"\\*", '*'},        // multiply
   {"/", '/'},          // divide
   {"==", TK_EQ},        // equal
+  {"!=", TK_NEQ},       // not equal
+  {"&&", TK_AND},       // logical and
+  {"\\|\\|", TK_OR},    // logical or
   {"\\(", '('},        // left parenthesis
   {"\\)", ')'},        // right parenthesis
   {"\\b[0-9]+\\b", TK_NUM},     // number (0-9)
-  {"\\$(\\$0|ra|[sgt]p|t[0-6]|a[0-7]|s([0-9]|1[0-1])|x([0-9]|1[0-9]|2[0-9]|31))", TK_REG},
+  {"\\$\\$?0|\\$(ra|[sgt]p|t[0-6]|a[0-7]|s([0-9]|1[0-1])|x([0-9]|1[0-9]|2[0-9]|31))", TK_REG},
   {"\\b0[xX][0-9a-fA-F]+\\b", TK_HEX}, // hexadecimal number
 };
 
@@ -185,13 +190,33 @@ int find_major(int p, int q, char* e) {
         par_count--; 
         break;
       }
+      case TK_OR: {
+        ret = (last_op <= 6 && par_count == 0) ? i : ret;
+        last_op = (par_count == 0 && last_op <= 6) ? 6 : last_op;
+        break;
+      }
+      case TK_AND: {
+        ret = (last_op <= 5 && par_count == 0) ? i : ret;
+        last_op = (par_count == 0 && last_op <= 5) ? 5 : last_op;
+        break;
+      }
+      case TK_EQ: case TK_NEQ: {
+        ret = (last_op <= 4 && par_count == 0) ? i : ret;
+        last_op = (par_count == 0 && last_op <= 4) ? 4 : last_op;
+        break;
+      } 
       case '+': case '-': {
-        ret = (last_op <= 2 && par_count == 0) ? i : ret;
-        last_op = (par_count == 0) ? 2 : last_op;
+        ret = (last_op <= 3 && par_count == 0) ? i : ret;
+        last_op = (par_count == 0 && last_op <= 3) ? 3 : last_op;
         break;
       }
       case '*': case '/': {
-        ret = (last_op <= 1 && par_count == 0) ? i : ret;
+        ret = (last_op <= 2 && par_count == 0) ? i : ret;
+        last_op = (par_count == 0 && last_op <= 2) ? 2 : last_op;
+        break;
+      }
+      case TK_NEG: case TK_POS: case TK_DEREF: {
+        ret = (last_op < 1 && par_count == 0) ? i : ret; // Right-associative
         last_op = (par_count == 0 && last_op <= 1) ? 1 : last_op;
         break;
       }
@@ -228,11 +253,13 @@ word_t eval(int p, int q, char* e, bool *success){
         return strtol(tokens[p].str + 2, NULL, 16);
       case TK_REG: {
         word_t reg_val = 0;
-        if (strcmp(tokens[p].str, "$0")) {
+        //printf("reg token: %s\n", tokens[p].str);
+        if (strcmp(tokens[p].str, "$0") == 0) {
+          //printf("get reg $0\n");
           reg_val = isa_reg_str2val(tokens[p].str, success);
         } 
         else{
-          isa_reg_str2val(tokens[p].str + 1, success);
+          reg_val = isa_reg_str2val(tokens[p].str + 1, success);
         }
         if (!*success) {
           printf("Failed to get register value at position %d: %s\n%s\n%*.s^\n", p, tokens[p].str, e, p, "");
@@ -261,12 +288,15 @@ word_t eval(int p, int q, char* e, bool *success){
       printf("Invalid expression, can't find major operator\n");
       return 0;
     }
-    word_t val1 = eval(p, op - 1, e, success);
-    if (!*success) {
-      printf("Failed to evaluate left operand from position %d to %d\n%s\n%*.s^\n", p, op - 1, e, p, "");
-      return 0;
+    word_t val1 = 0, val2 = 0;
+    if (tokens[op].type != TK_NEG && tokens[op].type != TK_POS && tokens[op].type != TK_DEREF) {
+      val1 = eval(p, op - 1, e, success);
+      if (!*success) {
+        printf("Failed to evaluate left operand from position %d to %d\n%s\n%*.s^\n", p, op - 1, e, p, "");
+        return 0;
+      }
     }
-    word_t val2 = eval(op + 1, q, e, success);
+    val2 = eval(op + 1, q, e, success);
     if (!*success) {
       printf("Failed to evaluate right operand from position %d to %d\n%s\n%*.s^\n", op + 1, q, e, op + 1, "");
       return 0;
@@ -299,8 +329,34 @@ word_t eval(int p, int q, char* e, bool *success){
         res = (sword_t)val1 / (sword_t)val2;
         return res;
       }
-      case TK_EQ:
-        return val1 == val2;
+      case TK_EQ:{
+        res = val1 == val2;
+        return res;
+      }
+      case TK_NEQ:{
+        res = val1 != val2;
+        return res;
+      }
+      case TK_AND:{
+        res = val1 && val2;
+        return res;
+      }
+      case TK_OR:{
+        res = val1 || val2;
+        return res;
+      }
+      case TK_NEG:{
+        res = -val2;
+        return res;
+      }
+      case TK_POS:{
+        res = val2;
+        return res;
+      }
+      case TK_DEREF:{
+        res = vaddr_read(val2, sizeof(word_t)/sizeof(uint8_t));
+        return res;
+      }
       default: {
         *success = false;
         printf("Invalid operator at position %d: %s\n%s\n%*.s^\n", op, tokens[op].str, e, op, "");
@@ -312,10 +368,62 @@ word_t eval(int p, int q, char* e, bool *success){
 
 }
 
+static bool check_single_op(int last_op){
+  static const int certain_type[] = {'+', '-', '*', '/', '(', TK_EQ, TK_NEQ, TK_AND, TK_OR, TK_NEG, TK_POS, TK_DEREF};
+  int len = sizeof(certain_type) / sizeof(certain_type[0]);
+  for (int i = 0; i < len; i++) {
+    if (last_op == certain_type[i]) {
+      return true;
+    }
+  }
+  return false;
+}
+
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
+  }
+  for (int i = 0; i < nr_token; i ++) {
+    if (tokens[i].type == '-' ) {
+      if (i == 0) {
+        tokens[i].type = TK_NEG;
+      }
+      else {
+        for (int j = i - 1; j >= 0; j--){
+          if (tokens[j].type != TK_NOTYPE){
+            tokens[i].type = (check_single_op(tokens[j].type)) ? TK_NEG : tokens[i].type;
+            break;
+          }
+        }
+      }
+    }
+    if (tokens[i].type == '+' ) {
+      if (i == 0) {
+        tokens[i].type = TK_POS;
+      }
+      else {
+        for (int j = i - 1; j >= 0; j--){
+          if (tokens[j].type != TK_NOTYPE){
+            tokens[i].type = (check_single_op(tokens[j].type)) ? TK_POS : tokens[i].type;
+            break;
+          }
+        }
+      }
+    }
+    if (tokens[i].type == '*' ) {
+      if (i == 0) {
+        tokens[i].type = TK_DEREF;
+      }
+      else {
+        for (int j = i - 1; j >= 0; j--){
+          if (tokens[j].type != TK_NOTYPE){
+            tokens[i].type = (check_single_op(tokens[j].type)) ? TK_DEREF : tokens[i].type;
+            break;
+          }
+        }
+      }
+    }
   }
   //printf("eval\n");
   return eval(0, nr_token - 1, e, success);
