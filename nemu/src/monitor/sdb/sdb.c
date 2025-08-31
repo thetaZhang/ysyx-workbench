@@ -75,6 +75,7 @@ static int cmd_info(char *args) {
     isa_reg_display();
   }
   else if (strcmp(arg, "w") == 0) {
+    wp_display();
   }
   else {
     printf("Usage: info <option>\n");
@@ -186,6 +187,17 @@ static int cmd_p(char *args) {
   return 0;
 }
 
+static int cmd_w(char *args) {
+  if (args == NULL) {
+    printf("Usage: w <expression>\n");
+    return 0;
+  }
+  return 0;
+}
+
+static int cmd_d(char *args) {
+  return 0;
+}
 
 static struct {
   const char *name;
@@ -199,8 +211,8 @@ static struct {
   { "info", "Display information about the program state", cmd_info },
   { "x", "Examine memory at a given address", cmd_x },
   { "p", "Evaluate an expression and print the result", cmd_p },
-  // { "w", "Set a watchpoint to monitor an expression", cmd_w },
-  // { "d", "Delete a watchpoint by its number", cmd_d }
+  { "w", "Set a watchpoint to monitor an expression", cmd_w },
+  { "d", "Delete a watchpoint by its number", cmd_d }
 
   /* TODO: Add more commands */
 
