@@ -80,8 +80,8 @@ void wp_add(char* expression){
     return;
   }
   WP* wp = new_wp();
-  printf("here/%u\n", val);
   strcpy(wp->expr, expression);
+  printf("here/%u\n", val);
   wp->last_val = val;
   printf("Watchpoint %d: %s\n", wp->NO, wp->expr);
 }
