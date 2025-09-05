@@ -5,19 +5,55 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 size_t strlen(const char *s) {
-  panic("Not implemented");
+  if (s == NULL) {
+    return 0;
+  }
+  
+  size_t len = 0;
+  while(s[len] != '\0') {
+    len++;
+  }
+  return len;
+  
 }
 
 char *strcpy(char *dst, const char *src) {
-  panic("Not implemented");
+  if (dst == NULL || src == NULL) {
+    return NULL;
+  }
+
+  char *ret = dst;
+  while (*src != '\0'){
+    *dst = *src;
+    dst++;
+    src++;
+  }
+  *dst = '\0';
+  return ret;
 }
 
 char *strncpy(char *dst, const char *src, size_t n) {
-  panic("Not implemented");
+  if (dst == NULL || src == NULL) {
+    return NULL;
+  }
+
+  char *ret = dst;
+  size_t i;
+  for (i = 0; i < n && src[i] != '\0'; i++) {
+    dst[i] = src[i];
+  }
+    
+  for (; i < n; i++) {
+    dst[i] = '\0';
+  }
+  return ret;
 }
 
 char *strcat(char *dst, const char *src) {
-  panic("Not implemented");
+  size_t len_dst= strlen(dst);
+  strcpy(dst + len_dst, src);
+  return dst;
+
 }
 
 int strcmp(const char *s1, const char *s2) {
