@@ -25,7 +25,7 @@ $(TARGET): $(VSRCS) $(CSRCS)
 	$(VERILATOR) $(VERILATOR_FLAGS) $(VSRCS) $(CSRCS)
 
 sim: $(TARGET)
-	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
+	$(call git_commit, "sim RTL")
 	@echo "Running simulation..."
 	$(TARGET)
 
