@@ -32,6 +32,11 @@ sim: $(TARGET)
 	@echo "Running simulation..."
 	$(TARGET)
 
+sim-trace: VERILATOR_FLAGS += --trace-fst
+sim-trace: clean $(TARGET)
+	@echo "Running simulation with VCD trace..."
+	$(TARGET)
+
 lint: $(VSRCS)
 	@echo "Running Verilator lint check..."
 	$(VERILATOR) $(LINT_FLAGS) $(VSRCS)
