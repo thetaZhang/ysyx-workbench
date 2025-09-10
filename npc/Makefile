@@ -8,7 +8,7 @@ CSRCS = $(wildcard $(CSRC_DIR)/*.cpp)
 TOP_MODULE ?= top 
 
 VERILATOR = verilator
-VERILATOR_FLAGS = --cc --exe --build --trace-fst
+VERILATOR_FLAGS = --cc --exe --build 
 VERILATOR_FLAGS += -Wall #-Wno-fatal
 VERILATOR_FLAGS += --top-module $(TOP_MODULE)
 VERILATOR_FLAGS += -Mdir $(BUILD_DIR)
