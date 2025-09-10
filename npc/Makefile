@@ -9,7 +9,7 @@ TOP_MODULE ?= top
 
 VERILATOR = verilator
 VERILATOR_FLAGS = --cc --exe --build #--trace
-VERILATOR_FLAGS += -Wall -Wno-fatal
+VERILATOR_FLAGS += -Wall #-Wno-fatal
 VERILATOR_FLAGS += --top-module $(TOP_MODULE)
 VERILATOR_FLAGS += -Mdir $(BUILD_DIR)
 
