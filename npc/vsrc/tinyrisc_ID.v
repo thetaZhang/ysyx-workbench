@@ -28,12 +28,12 @@ module tinyrisc_ID (
   wire                           mem_read;
   wire                           mem_write;
 
-  import "DPI-C" function void exit(input int code);
+  import "DPI-C" function void npc_exit(input int code);
 
   always @(posedge clk) begin
     if (inst_in == `INST_EBREAK) begin
       $display("ebreak inst, exiting simulation.");
-      exit(0);
+      npc_exit(0);
     end
   end
 
