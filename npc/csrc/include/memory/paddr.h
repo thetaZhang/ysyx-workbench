@@ -1,12 +1,21 @@
 #ifndef __MEMORY_PADDR_H__
 #define __MEMORY_PADDR_H__
 
-#include <cstdint>
+#include <common.h>
 
-#define PMEM_SIZE (128 * 1024 * 1024)
+#define MSIZE 0x80000000
+#define MBASE 0x80000000
 
-extern uint32_t pmem[];
 
-uint32_t pmem_read(uint32_t addr, int len);
+void init_mem();
+
+
+uint8_t* guest_to_host(paddr_t paddr);
+
+paddr_t host_to_guest(uint8_t *haddr);
+
+
+word_t paddr_read(paddr_t addr);
+void paddr_write(paddr_t addr, word_t data, uint8_t mask);
 
 #endif

@@ -4,7 +4,10 @@
 #include "verilated_vcd_c.h"
 #include <stdio.h>
 #include <assert.h>
+
+#include <common.h>
 #include "memory/paddr.h"
+
 #include str(TOP_MODULE_HEADER)
 #include "svdpi.h"
 #include str(concat(TOP_MODULE,__Dpi.h))

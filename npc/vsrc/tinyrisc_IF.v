@@ -8,6 +8,6 @@ module tinyrisc_IF (
 );
 
 
-DffNegRst #(`ADDR_WIDTH) pc_reg_u (clk, rst_n, pc_in, pc_out);
+DffNegRst #(`ADDR_WIDTH, `INIT_INST_ADDR) pc_reg_u (clk, rst_n, pc_in, pc_out);
 
 endmodule
