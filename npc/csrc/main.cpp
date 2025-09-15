@@ -12,10 +12,10 @@
 
 
 void npc_exit(int code){
-  //assert(code == 0);
-  //printf("Exiting with code %d\n", code);
-  //Verilated::gotFinish(true);
-  //return;
+  assert(code == 0);
+  printf("Exiting with code %d\n", code);
+  Verilated::gotFinish(true);
+  return;
 }
 
 int main(int argc, char** argv){
