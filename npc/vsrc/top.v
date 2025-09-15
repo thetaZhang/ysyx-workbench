@@ -6,9 +6,6 @@
 module top (
     input                        clk,
     input                        rst_n,
-    input  [`INST_WIDTH - 1 : 0] inst_in,
-    output [`ADDR_WIDTH - 1 : 0] inst_addr_out,
-    output                       inst_ce_out,
 
     input  [`DATA_WIDTH - 1 : 0] data_rd_in,
     output [`ADDR_WIDTH - 1 : 0] data_addr_out,
@@ -31,11 +28,21 @@ module top (
   wire [  `DATA_WIDTH - 1 : 0] ex_data_out;
   wire [  `DATA_WIDTH - 1 : 0] mem_data_out;
   wire                         mem_to_reg;
+  wire [  `INST_WIDTH - 1 : 0] inst_in;
+  wire [  `ADDR_WIDTH - 1 : 0] inst_addr_out;
+  wire                         inst_ce_out;
 
 
 
   assign inst_ce_out   = 1'b1;
 
+
+  // inst_mem
+  inst_mem inst_mem_u (
+      .ce       (inst_ce_out),
+      .inst_addr_in (inst_addr_out),
+      .inst_out (inst_in)
+  );
 
   // IF
 

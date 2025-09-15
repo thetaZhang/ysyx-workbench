@@ -6,6 +6,9 @@
 #define MSIZE 0x80000000
 #define MBASE 0x80000000
 
+#define PMEM_LEFT  ((paddr_t)MBASE)
+#define PMEM_RIGHT ((paddr_t)MBASE + MSIZE - 1)
+#define RESET_VECTOR (PMEM_LEFT)
 
 void init_mem();
 
