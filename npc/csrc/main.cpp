@@ -9,17 +9,17 @@
 #include "svdpi.h"
 #include str(concat(TOP_MODULE,__Dpi.h))
 
-VerilatedContext* contextp;
+
 
 void exit(int code){
   assert(code == 0);
   printf("Exiting with code %d\n", code);
-  //contextp->gotFinish(true);
+  Verilated::gotFinish(true);
   return;
 }
 
 int main(int argc, char** argv){
-	contextp = new VerilatedContext;	 
+	VerilatedContext* contextp = new VerilatedContext;
   contextp->commandArgs(argc, argv);
   Vtop* top = new Vtop{contextp};
   //Verilated::traceEverOn(true);
