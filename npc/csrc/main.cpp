@@ -15,7 +15,7 @@ extern "C" void npc_exit(int code){
   assert(code == 0);
   printf("Exiting with code %d\n", code);
   Verilated::gotFinish(true);
-  return;
+  exit(code);
 }
 
 int main(int argc, char** argv){
