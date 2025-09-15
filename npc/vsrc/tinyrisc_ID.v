@@ -30,12 +30,12 @@ module tinyrisc_ID (
 
   import "DPI-C" function void exit(input int code);
 
-  always @(posedge clk) begin
-    if (inst_in == `INST_EBREAK) begin
-      $display("ebreak inst, exiting simulation.");
-      exit(0);
-    end
-  end
+  // always @(posedge clk) begin
+  //   if (inst_in == `INST_EBREAK) begin
+  //     $display("ebreak inst, exiting simulation.");
+  //     exit(0);
+  //   end
+  // end
 
   ImmGen #(
       .INST_WIDTH(`INST_WIDTH),
