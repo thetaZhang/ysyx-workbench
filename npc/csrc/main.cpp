@@ -14,7 +14,7 @@
 void exit(int code){
   //assert(code == 0);
   printf("Exiting with code %d\n", code);
-  //Verilated::gotFinish(true);
+  Verilated::gotFinish(true);
   return;
 }
 
