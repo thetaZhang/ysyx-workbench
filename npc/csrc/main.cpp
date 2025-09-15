@@ -33,6 +33,9 @@ int main(int argc, char** argv){
     pmem[i] = 0x00100093;
   }
   pmem[10] = 0x00100073;
+  for ( int i = 11; i < PMEM_SIZE / 4; i++) {
+    pmem[i] = 0x00100093;
+  }
   while (!contextp->gotFinish()) { 
     top->clk = !top->clk;
     top->eval();
