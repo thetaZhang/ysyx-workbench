@@ -34,6 +34,7 @@ module tinyrisc_ID (
     if (inst_in == `INST_EBREAK) begin
       $display("ebreak inst, exiting simulation.");
       exit(0);
+      $finish;
     end
   end
 
