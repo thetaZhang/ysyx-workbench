@@ -43,7 +43,8 @@ int main(int argc, char** argv){
       top->inst_in = pmem_read(top->inst_addr_out, 4);
       printf("pc = 0x%08x, inst = 0x%08x\n", top->inst_addr_out, top->inst_in);
     }
-    //tfp->dump(main_time++);
+    //tfp->dump(main_time);
+    main_time++;
     // if (main_time > 100) {
     //   printf("Time out!\n");
     //   break;
