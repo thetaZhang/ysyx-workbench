@@ -33,9 +33,7 @@ module tinyrisc_ID (
   always @(posedge clk) begin
     if (inst_in == `INST_EBREAK) begin
       $display("ebreak inst, exiting simulation.");
-      $finish;
       exit(0);
-      
     end
   end
 
