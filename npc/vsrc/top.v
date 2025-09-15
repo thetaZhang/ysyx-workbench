@@ -1,5 +1,8 @@
 // top of the tinyrisc CPU
 `include "GlobalDefine.vh"
+
+
+
 module top (
     input                        clk,
     input                        rst_n,
@@ -28,6 +31,7 @@ module top (
   wire [  `DATA_WIDTH - 1 : 0] ex_data_out;
   wire [  `DATA_WIDTH - 1 : 0] mem_data_out;
   wire                         mem_to_reg;
+
 
 
   assign inst_ce_out   = 1'b1;
@@ -85,6 +89,8 @@ module top (
 
   // WB
   assign rd_data       = mem_to_reg ? mem_data_out : ex_data_out;
+
+
 
 
 endmodule

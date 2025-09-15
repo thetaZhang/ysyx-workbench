@@ -67,6 +67,8 @@
 // UJ-type instructions
 `define INST_JAL 32'h6f
 
+`define INST_EBREAK 32'h00100073
+
 // ALU input B src
 `define ALU_SRC_IMM 1'b0
 `define ALU_SRC_REG 1'b1
@@ -98,11 +100,4 @@
 `define PC_JUMP_R 2'b11
 
 
-// test data path
-`ifndef TEST_DATA_PATH
-  `define TEST_DATA_PATH "test/data/data_mem.txt"
-`endif
-
-`ifndef TEST_INST_PATH
-  `define TEST_INST_PATH "test/data/machinecode.txt"
-`endif
+`define INIT_INST_ADDR 32'h8000_0000

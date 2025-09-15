@@ -28,6 +28,15 @@ module tinyrisc_ID (
   wire                           mem_read;
   wire                           mem_write;
 
+  import "DPI-C" function void npc_exit(input int code);
+
+  always @(posedge clk) begin
+    if (inst_in == `INST_EBREAK) begin
+      $display("ebreak inst, exiting simulation.");
+      npc_exit(0);
+    end
+  end
+
   ImmGen #(
       .INST_WIDTH(`INST_WIDTH),
       .IMM_WIDTH (`DATA_WIDTH)
