@@ -37,4 +37,11 @@ assign data_rd_1 = reg_file[addr_rd_1];
 assign data_rd_2 = reg_file[addr_rd_2];
 
 
+export "DPI-C" function reg_probe;
+
+function int unsigned reg_probe(input int unsigned raddr);
+  return reg_file[raddr];
+endfunction
+
+
 endmodule

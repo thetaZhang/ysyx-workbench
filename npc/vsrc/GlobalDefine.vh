@@ -1,8 +1,15 @@
+`ifndef GLOBAL_DEFINE_VH
+`define GLOBAL_DEFINE_VH
+
 // system
 `define INST_WIDTH 32
 `define ADDR_WIDTH 32
 `define DATA_WIDTH 32
 `define REG_ADDR_WIDTH 5
+
+`define DATA_WORD 32
+`define DATA_HALF 16
+`define DATA_BYTE 8
 
 // opcode mask
 `define R_TYPE_MASK 32'hfe00707f
@@ -88,9 +95,6 @@
 `define ALU_LTU   4'b1001
 `define ALU_SRA   4'b1010
 
-
-
-
 // PCselcodes
 `define PC_SEL_WIDTH 2
 
@@ -101,3 +105,14 @@
 
 
 `define INIT_INST_ADDR 32'h8000_0000
+
+// Memory access width
+`define MEM_MODE_WIDTH 3
+
+`define MEM_WORD 3'b000
+`define MEM_HALF 3'b001
+`define MEM_BYTE 3'b010
+`define MEM_HALF_U 3'b011
+`define MEM_BYTE_U 3'b100
+
+`endif // GLOBAL_DEFINE_VH

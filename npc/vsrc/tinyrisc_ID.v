@@ -17,7 +17,8 @@ module tinyrisc_ID (
     output                         data_we_out,
     output                         data_ce_out,
     output                         mem_to_reg_out,
-    output                         alu_zero_preset
+    output                         alu_zero_preset,
+    output [`MEM_MODE_WIDTH - 1 : 0] mem_width_out
 
 );
 
@@ -28,12 +29,12 @@ module tinyrisc_ID (
   wire                           mem_read;
   wire                           mem_write;
 
-  import "DPI-C" function void npc_exit(input int code);
+  import "DPI-C" function void npc_trap();
 
   always @(posedge clk) begin
     if (inst_in == `INST_EBREAK) begin
-      $display("ebreak inst, exiting simulation.");
-      npc_exit(0);
+      // $display("ebreak inst, exiting simulation.");
+      npc_trap();
     end
   end
 
@@ -88,7 +89,8 @@ module tinyrisc_ID (
       .alu_src        (alu_src_out),
       .alu_zero_preset(alu_zero_preset),
       .is_reg_write   (reg_we),
-      .is_mem_to_reg  (mem_to_reg_out)
+      .is_mem_to_reg  (mem_to_reg_out),
+      .mem_width_out  (mem_width_out)
   );
 
   assign data_we_out = mem_write;

@@ -12,11 +12,18 @@
 #include "svdpi.h"
 #include str(concat(TOP_MODULE,__Dpi.h))
 
+void init_monitor(int, char *[]);
+// extern word_t reg_probe(word_t raddr);
 
-
-extern "C" void npc_exit(int code){
-  assert(code == 0);
-  printf("Exiting with code %d\n", code);
+extern "C" void npc_trap(){
+  svSetScope(svGetScopeFromName("TOP.top.ID_u.regfile_u"));
+  uint32_t code = reg_probe(10);
+  svSetScope(svGetScopeFromName("TOP.top.IF_u"));
+  uint32_t pc = pc_probe();
+  Log("npc: %s at pc = " FMT_WORD,
+          ((code == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
+            ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
+            pc);
   Verilated::gotFinish(true);
   exit(code);
 }

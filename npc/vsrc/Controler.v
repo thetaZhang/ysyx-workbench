@@ -62,7 +62,8 @@ module Controler #(
     output alu_src,
     output alu_zero_preset,
     output is_reg_write,
-    output is_mem_to_reg
+    output is_mem_to_reg,
+    output [`MEM_MODE_WIDTH - 1 : 0] mem_width_out
 );
 
 
@@ -132,4 +133,13 @@ assign alu_zero_preset = ((inst_in & `B_TYPE_MASK) == `INST_BEQ) ? 1'b1 :
                          ((inst_in & `B_TYPE_MASK) == `INST_BLTU) ? 1'b0 :
                          ((inst_in & `B_TYPE_MASK) == `INST_BGE) ? 1'b1 :
                          ((inst_in & `B_TYPE_MASK) == `INST_BGEU) ? 1'b1 : 1'b0;
+
+assign mem_width_out = ((inst_in & `I_TYPE_MASK) == `INST_LW) ? `MEM_WORD :
+                   ((inst_in & `I_TYPE_MASK) == `INST_LH) ? `MEM_HALF :
+                   ((inst_in & `I_TYPE_MASK) == `INST_LB) ? `MEM_BYTE :
+                   ((inst_in & `I_TYPE_MASK) == `INST_LHU) ? `MEM_HALF_U :
+                   ((inst_in & `I_TYPE_MASK) == `INST_LBU) ? `MEM_BYTE_U :
+                   ((inst_in & `S_TYPE_MASK) == `INST_SW) ? `MEM_WORD :
+                   ((inst_in & `S_TYPE_MASK) == `INST_SH) ? `MEM_HALF :
+                   ((inst_in & `S_TYPE_MASK) == `INST_SB) ? `MEM_BYTE : `MEM_WORD;
 endmodule
