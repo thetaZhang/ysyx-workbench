@@ -39,7 +39,7 @@ module tinyrisc_EX (
 
   //PC gen
   assign is_branch = (alu_zero == alu_zero_preset);
-  assign pc_offset = (pc_sel_in == `PC_JUMP_R) ? alu_data_out : imm_in;
+  assign pc_offset = (pc_sel_in == `PC_JUMP_R) ? (alu_data_out & {{31{1'b1}}, 1'b0})  : imm_in;
 
   PCMux #(
       .ADDR_WIDTH(`ADDR_WIDTH),

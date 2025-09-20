@@ -5,11 +5,12 @@ BUILD_DIR = $(NPC_HOME)/build
 VSRCS = $(wildcard $(VSRC_DIR)/*.v)
 CSRCS = $(shell find $(CSRC_DIR) -name "*.cpp" -o -name "*.c" -o -name "*.cc" -o -name "*.cxx")
 
+
 TOP_MODULE ?= top
 
 INCFLAGS = -I$(CSRC_DIR)/include 
 
-CXXFLAGS = -Wall -O2 -g
+CXXFLAGS = -Wall -O2 -g -mcmodel=medium
 CXXFLAGS += $(shell pkg-config --cflags verilator)
 CXXFLAGS += $(INCFLAGS)
 CXXFLAGS += -DTOP_MODULE=V$(TOP_MODULE)
@@ -43,12 +44,12 @@ $(TARGET): $(VSRCS) $(CSRCS)
 sim: $(TARGET)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Running simulation..."
-	$(TARGET)
+	$(TARGET) $(IMG)
 
 sim-trace: VERILATOR_FLAGS += --trace
 sim-trace: clean $(TARGET)
 	@echo "Running simulation with trace..."
-	$(TARGET)
+	$(TARGET) $(IMG)
 
 lint: $(VSRCS)
 	@echo "Running Verilator lint check..."
