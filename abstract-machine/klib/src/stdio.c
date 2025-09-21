@@ -5,13 +5,6 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-int printf(const char *fmt, ...) {
-  panic("Not implemented");
-}
-
-int vsprintf(char *out, const char *fmt, va_list ap) {
-  panic("Not implemented");
-}
 
 static void _reverse(char *s, int len){
   int i = 0, j = len - 1;
@@ -52,6 +45,70 @@ static int _itoa(int n, char *s) {
   return i;
 
 }
+
+
+int printf(const char *fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  char str_buffer[1024];
+  int len = vsprintf(str_buffer, fmt, args);
+  va_end(args);
+  putstr(str_buffer);
+  return len;
+
+}
+
+int vsprintf(char *out, const char *fmt, va_list ap) {
+  int count = 0;
+  char buffer[32];
+   
+  while (*fmt != '\0'){
+    if (*fmt != '%'){
+      *out = *fmt;
+      out++;
+      count++;
+    }
+    else {
+      fmt++;
+      switch (*fmt) {
+        case 'd':{
+          int num = va_arg(ap, int);
+          int len = _itoa(num, buffer);
+          for (int i = 0; i < len; i++){
+            *out = buffer[i];
+            out++;
+            count++;
+          }
+          break;
+        }
+        case 's':{
+          const char *str = va_arg(ap, const char *);
+          while (*str != '\0'){
+            *out = *str;
+            out++;
+            str++;
+            count++;
+          }
+          break;
+        }
+        default:{
+          *out = '%';
+          out++;
+          *out = *fmt;
+          out++;
+          count+=2;
+          break;
+        }
+      }
+    }
+
+    fmt++;
+  }
+  *out = '\0';
+  return count;
+}
+
+
 
 int sprintf(char *out, const char *fmt, ...) {
   va_list args;
