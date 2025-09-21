@@ -1,6 +1,6 @@
 #include <am.h>
 #include <nemu.h>
-#include <stdio.h>
+#include <klib.h>
 
 uint64_t boot_time;
 
