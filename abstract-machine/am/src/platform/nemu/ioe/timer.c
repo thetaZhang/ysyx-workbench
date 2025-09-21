@@ -1,9 +1,11 @@
 #include <am.h>
 #include <nemu.h>
+#include <stdio.h>
 
 uint64_t boot_time;
 
 void __am_timer_init() {
+  printf("RTC ADDR: 0x%08x\n", RTC_ADDR);
   uint32_t boot_time_msb = inl(RTC_ADDR + 4);
   uint32_t boot_time_lsb = inl(RTC_ADDR);
   boot_time = ((uint64_t)boot_time_msb << 32) | boot_time_lsb;
