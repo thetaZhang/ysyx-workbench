@@ -23,8 +23,10 @@ int is_exit_status_bad();
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
+  printf("Initializing AM monitor...\n");
   am_init_monitor();
 #else
+  printf("Initializing default monitor...\n");
   init_monitor(argc, argv);
 #endif
 
