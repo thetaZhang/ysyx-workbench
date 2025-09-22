@@ -43,6 +43,7 @@ void *malloc(size_t size) {
   }
   char *old = hbrk;
   hbrk += size;
+   printf("malloc %d\n", size);
   return old;
 #endif
   return NULL;
