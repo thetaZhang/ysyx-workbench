@@ -46,6 +46,28 @@ static int _itoa(int n, char *s) {
 
 }
 
+static int _itoa_hex(unsigned int n, char *s, bool upper) {
+
+  int i = 0;
+
+  if (n == 0) {
+    *s++ = '0';
+    *s = '\0';
+    return 1;
+  }
+  while (n != 0){
+    unsigned int digit = n & 0xF;
+    s[i++] = (digit < 10) ? ('0' + digit) : ((upper ? 'A' : 'a') + (digit - 10));
+    n >>= 4;
+  }
+
+
+  _reverse(s, i);
+  s[i] = '\0';
+  return i;
+
+}
+
 
 int printf(const char *fmt, ...) {
   va_list args;
@@ -84,6 +106,28 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
         case 'd':{
           int num = va_arg(ap, int);
           int len = _itoa(num, buffer);
+          if (width > len){
+            int pad_len = width - len;
+            char pad_char = zero_pad ? '0' : ' ';
+            for (int i = 0; i < pad_len; i++){
+              *out = pad_char;
+              out++;
+              count++;
+            }
+          }
+
+          for (int i = 0; i < len; i++){
+            *out = buffer[i];
+            out++;
+            count++;
+          }
+          break;
+        }
+        case 'x':
+        case 'X':{
+          int num = va_arg(ap, int);
+          bool upper = (*fmt == 'X');
+          int len = _itoa_hex(num, buffer, upper);
           if (width > len){
             int pad_len = width - len;
             char pad_char = zero_pad ? '0' : ' ';
