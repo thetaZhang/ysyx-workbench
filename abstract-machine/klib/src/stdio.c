@@ -113,57 +113,12 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 int sprintf(char *out, const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  
   int count = 0;
 
-  char buffer[32];
-   
-  while (*fmt != '\0'){
-    if (*fmt != '%'){
-      *out = *fmt;
-      out++;
-      count++;
-    }
-    else {
-      fmt++;
-      switch (*fmt) {
-        case 'd':{
-          int num = va_arg(args, int);
-          int len = _itoa(num, buffer);
-          for (int i = 0; i < len; i++){
-            *out = buffer[i];
-            out++;
-            count++;
-          }
-          break;
-        }
-        case 's':{
-          const char *str = va_arg(args, const char *);
-          while (*str != '\0'){
-            *out = *str;
-            out++;
-            str++;
-            count++;
-          }
-          break;
-        }
-        default:{
-          *out = '%';
-          out++;
-          *out = *fmt;
-          out++;
-          count+=2;
-          break;
-        }
-      }
-    }
-
-    fmt++;
-  }
-  *out = '\0';
-  va_end(args);
-
+  count = vsprintf(out, fmt, args);
+  
   return count;
+
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
