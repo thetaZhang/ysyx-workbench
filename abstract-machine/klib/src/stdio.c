@@ -145,6 +145,19 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
           }
           break;
         }
+        case 'c':{
+          char ch = (char)va_arg(ap, int); // args will be automatically promoted to int
+          int pad_len = width > 1 ? width - 1 : 0;
+          for (int i = 0; i < pad_len; i++){
+            *out = ' ';
+            out++;
+            count++;
+          }
+          *out = ch;
+          out++;
+          count++;
+          break;
+        }
         case 's':{
           const char *str = va_arg(ap, const char *);
           while (*str != '\0'){
