@@ -70,10 +70,30 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
     }
     else {
       fmt++;
+      bool zero_pad = false;
+      int width = 0;
+      if (*fmt == '0') {
+        zero_pad = true;
+        fmt++;
+      }
+      while (*fmt >= '0' && *fmt <= '9') {
+        width = width * 10 + (*fmt - '0');
+        fmt++;
+      }
       switch (*fmt) {
         case 'd':{
           int num = va_arg(ap, int);
           int len = _itoa(num, buffer);
+          if (width > len){
+            int pad_len = width - len;
+            char pad_char = zero_pad ? '0' : ' ';
+            for (int i = 0; i < pad_len; i++){
+              *out = pad_char;
+              out++;
+              count++;
+            }
+          }
+
           for (int i = 0; i < len; i++){
             *out = buffer[i];
             out++;
