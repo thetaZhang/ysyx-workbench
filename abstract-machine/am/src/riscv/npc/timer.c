@@ -1,6 +1,12 @@
 #include <am.h>
+#include <klib.h>
+
+uint64_t boot_time;
 
 void __am_timer_init() {
+  uint32_t boot_time_msb = inl(RTC_ADDR + 4);
+  uint32_t boot_time_lsb = inl(RTC_ADDR);
+  boot_time = ((uint64_t)boot_time_msb << 32) | boot_time_lsb;
 }
 
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
