@@ -11,7 +11,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-
+#include <config.h>
 
 typedef MUXDEF(CONFIG_ISA64, uint64_t, uint32_t) word_t;
 typedef MUXDEF(CONFIG_ISA64, int64_t, int32_t)  sword_t;
