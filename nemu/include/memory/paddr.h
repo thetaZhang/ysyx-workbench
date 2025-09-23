@@ -28,13 +28,7 @@ uint8_t* guest_to_host(paddr_t paddr);
 paddr_t host_to_guest(uint8_t *haddr);
 
 static inline bool in_pmem(paddr_t addr) {
-  //return addr - CONFIG_MBASE < CONFIG_MSIZE;
-  bool ret = addr - CONFIG_MBASE < CONFIG_MSIZE;
-
-  if (ret) {
-    printf("addr = 0x%08x, del = 0x%08x\n", addr, addr - CONFIG_MBASE);
-  }
-  return ret;
+  return addr - CONFIG_MBASE < CONFIG_MSIZE;
 }
 
 word_t paddr_read(paddr_t addr, int len);

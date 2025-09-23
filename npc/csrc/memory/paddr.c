@@ -7,10 +7,10 @@
 #include "svdpi.h"
 #include str(concat(TOP_MODULE,__Dpi.h))
 
-static uint8_t pmem[MSIZE] = {};
+static uint8_t pmem[CONFIG_MSIZE] = {};
 
-uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - MBASE; }
-paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + MBASE; }
+uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
+paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 static void out_of_bound(paddr_t addr) {
   svSetScope(svGetScopeFromName("TOP.top.IF_u"));
@@ -40,5 +40,5 @@ extern "C" void pmem_write(paddr_t addr, word_t data, uint8_t mask) {
 }
 
 void init_mem() {
-  memset(pmem, rand(), MSIZE);
+  memset(pmem, rand(), CONFIG_MSIZE);
 }
