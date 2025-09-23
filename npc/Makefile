@@ -10,7 +10,7 @@ TOP_MODULE ?= top
 
 INCFLAGS = -I$(CSRC_DIR)/include 
 
-CXXFLAGS = -Wall -O2 -g -mcmodel=medium
+CXXFLAGS = -Wall -O2 -mcmodel=medium
 CXXFLAGS += $(shell pkg-config --cflags verilator)
 CXXFLAGS += $(INCFLAGS)
 CXXFLAGS += -DTOP_MODULE=V$(TOP_MODULE)
@@ -55,7 +55,7 @@ sim-trace: clean $(TARGET)
 debug: CXXFLAGS += -g
 debug: clean $(TARGET)
 	@echo "Running simulation with debug info..."
-	gdb  $(TARGET) --args $(IMG)
+	gdb  --args $(TARGET) $(IMG)
 
 lint: $(VSRCS)
 	@echo "Running Verilator lint check..."
