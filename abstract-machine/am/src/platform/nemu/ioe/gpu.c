@@ -28,8 +28,8 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   int h = ctl->h;
   uint32_t* pixels = ctl->pixels;
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
-  for (int i = 0; (i < h) ; i ++) {
-    for (int j = 0; (j < w) ; j ++) {
+  for (int i = 0; (i < h) && (y + i < h); i ++) {
+    for (int j = 0; (j < w) && (x + j < w); j ++) {
       fb[(y + i) * w + (x + j)] = pixels[i * w + j];
     }
   }
