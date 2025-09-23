@@ -47,7 +47,7 @@ sim: $(TARGET)
 	@echo "Running simulation..."
 	$(TARGET) $(IMG)
 
-sim-trace: VERILATOR_FLAGS += --trace
+sim-trace: VERILATOR_FLAGS += --trace CXXFLAGS += -DWAVE
 sim-trace: clean $(TARGET)
 	@echo "Running simulation with trace..."
 	$(TARGET) $(IMG)

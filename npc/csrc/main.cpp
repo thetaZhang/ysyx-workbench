@@ -33,10 +33,12 @@ int main(int argc, char** argv){
 	VerilatedContext* contextp = new VerilatedContext;
   contextp->commandArgs(argc, argv);
   Vtop* top = new Vtop{contextp};
+  #ifdef WAVE
   Verilated::traceEverOn(true);
   VerilatedVcdC* tfp = new VerilatedVcdC;
   top->trace(tfp, 0);
   tfp->open("build/waveform.vcd");
+  #endif
   uint64_t main_time = 0;
   top->clk = 0;
   top->rst_n = 0;
@@ -50,14 +52,18 @@ int main(int argc, char** argv){
     //   top->inst_in = pmem_read(top->inst_addr_out, 4);
     //   printf("pc = 0x%08x, inst = 0x%08x\n", top->inst_addr_out, top->inst_in);
     // }
+    #ifdef WAVE
     tfp->dump(main_time);
+    #endif
     main_time++;
     // if (main_time > 100) {
     //   printf("Time out!\n");
     //   break;
     // }
   }
+  #ifdef WAVE
   tfp->close();
+  #endif
   delete top;
   delete contextp;
   return 0;
