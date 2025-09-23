@@ -21,7 +21,7 @@ static void out_of_bound(paddr_t addr) {
 
 extern "C" word_t pmem_read(paddr_t addr) {
   if (likely(in_pmem(addr))) return host_read(guest_to_host(addr), 4);
-  IFDEF(CONFIG_DEVICE, return mmio_read(addr, 4););
+  IFDEF(CONFIG_DEVICE, return mmio_read(addr, 4));
   out_of_bound(addr);
   return 0;
 }
@@ -35,7 +35,7 @@ extern "C" void pmem_write(paddr_t addr, word_t data, uint8_t mask) {
     }
     return;
   }
-  IFDEF(CONFIG_DEVICE, mmio_write(addr, 4, data); return;);
+  IFDEF(CONFIG_DEVICE, mmio_write(addr, 4, data); return);
   out_of_bound(addr);
 }
 
