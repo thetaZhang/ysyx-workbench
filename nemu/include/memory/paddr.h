@@ -31,7 +31,7 @@ static inline bool in_pmem(paddr_t addr) {
   //return addr - CONFIG_MBASE < CONFIG_MSIZE;
   bool ret = addr - CONFIG_MBASE < CONFIG_MSIZE;
 
-  if (!ret) {
+  if (ret) {
     printf("addr = 0x%08x, del = 0x%08x\n", addr, addr - CONFIG_MBASE);
   }
   return ret;
