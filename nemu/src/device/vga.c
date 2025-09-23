@@ -75,6 +75,7 @@ void vga_update_screen() {
   // in am, SYNC_ADDR is VGACTL_ADDR + 4, so here the sync register is vgactl_port_base[1]
   if (vgactl_port_base[1]) {
     update_screen();
+    vgactl_port_base[1] = 0;
   }
 }
 
