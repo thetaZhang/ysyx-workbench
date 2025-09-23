@@ -52,6 +52,11 @@ sim-trace: clean $(TARGET)
 	@echo "Running simulation with trace..."
 	$(TARGET) $(IMG)
 
+debug: CXXFLAGS += -g
+debug: clean $(TARGET)
+	@echo "Running simulation with debug info..."
+	gdb  $(TARGET) --args $(IMG)
+
 lint: $(VSRCS)
 	@echo "Running Verilator lint check..."
 	$(VERILATOR) $(LINT_FLAGS) $(VSRCS)
