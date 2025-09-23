@@ -1,6 +1,7 @@
 #include <memory/paddr.h>
 #include <getopt.h>
 
+void init_device();
 
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
@@ -64,6 +65,9 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Parse arguments. */
   parse_args(argc, argv);
+
+  /* Initialize devices. */
+  IFDEF(CONFIG_DEVICE, init_device());
 
 
   /* Load the image to memory. This will overwrite the built-in image. */
