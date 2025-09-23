@@ -35,7 +35,7 @@ extern "C" void pmem_write(paddr_t addr, word_t data, uint8_t mask) {
     }
     return;
   }
-  IFDEF(CONFIG_DEVICE, mmio_write(addr, 4, data); return);
+  IFDEF(CONFIG_DEVICE, mmio_write(addr, __builtin_popcount(mask & 0x0F), data); return);
   out_of_bound(addr);
 }
 
