@@ -29,6 +29,9 @@ extern "C" void npc_trap(){
 }
 
 int main(int argc, char** argv){
+  #ifdef CONFIG_DEVICE
+  printf("npc: device support is enabled\n");
+  #endif
   init_monitor(argc, argv);
 	VerilatedContext* contextp = new VerilatedContext;
   contextp->commandArgs(argc, argv);
