@@ -23,11 +23,13 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   int i;
+  int x = ctl->x;
+  int y = ctl->y;
   int w = ctl->w;
   int h = ctl->h;
   uint32_t* pixels = ctl->pixels;
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
-  for (i = 0; i < w * h; i ++) fb[i] = (pixels[i]);  //row first
+  for (i = 0; i < w * h; i ++) fb[y * w + x + i] = (pixels[i]);  //row first
   if (ctl->sync) {
     outl(SYNC_ADDR, 1);
   }
