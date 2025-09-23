@@ -29,7 +29,7 @@ extern "C" void npc_trap(){
 }
 
 int main(int argc, char** argv){
-  #ifdef CONFIG_DEVICE
+  #ifdef CONFIG_HAS_SERIAL
   printf("npc: device support is enabled\n");
   #endif
   init_monitor(argc, argv);
