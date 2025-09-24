@@ -17,6 +17,7 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
+#include <utils.h>
 
 // #include "sdb.h" // for watchpoints
 
@@ -38,7 +39,7 @@ bool wp_difftest();
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
+  if (ITRACE_COND) { log_write("%s\n", _this->logbuf); iringbuf_push(_this->logbuf); }
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
@@ -104,6 +105,7 @@ static void statistic() {
 
 void assert_fail_msg() {
   isa_reg_display();
+  IFDEF(CONFIG_ITRACE, iringbuf_display();iringbuf_free());
   statistic();
 }
 
@@ -127,12 +129,16 @@ void cpu_exec(uint64_t n) {
   switch (nemu_state.state) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
 
-    case NEMU_END: case NEMU_ABORT:
+    case NEMU_END: case NEMU_ABORT:{
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
             ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
           nemu_state.halt_pc);
+      if (nemu_state.halt_ret != 0 || nemu_state.state == NEMU_ABORT) {
+        IFDEF(CONFIG_ITRACE, iringbuf_display();iringbuf_free());
+      }
+    }
       // fall through
     case NEMU_QUIT: statistic();
   }
