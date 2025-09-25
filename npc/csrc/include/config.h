@@ -8,5 +8,6 @@
 #define CONFIG_RTC_MMIO 0xa0000048
 #define CONFIG_SERIAL_MMIO 0x10000000
 
+// #define CONFIG_ITRACE 1
 
 #endif

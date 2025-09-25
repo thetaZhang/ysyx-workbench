@@ -14,28 +14,30 @@
 ***************************************************************************************/
 
 #include <isa.h>
-#include <cpu/difftest.h>
-#include "../local-include/reg.h"
+#include <memory/paddr.h>
 
-bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
-  int reg_num = ARRLEN(cpu.gpr);
-  char reg_name[4];
-  for (int i = 0; i < reg_num; i ++) {
-    if (ref_r->gpr[i] != cpu.gpr[i]) {
-      isa_reg_get_name(i, reg_name);
-      printf("reg %s is different after executing instruction at pc = 0x%08x, right = 0x%08x, wrong = 0x%08x\n",
-          reg_name, pc, ref_r->gpr[i], cpu.gpr[i]);
-      return false;
-    }
-  }
+// this is not consistent with uint8_t
+// but it is ok since we do not access the array directly
+static const uint32_t img [] = {
+  0x00000297,  // auipc t0,0
+  0x00028823,  // sb  zero,16(t0)
+  0x0102c503,  // lbu a0,16(t0)
+  0x00100073,  // ebreak (used as nemu_trap)
+  0xdeadbeef,  // some data
+};
 
-  if (ref_r->pc != cpu.pc) {
-    printf("pc is different after executing instruction at pc = 0x%08x, right = 0x%08x, wrong = 0x%08x\n",
-        pc, ref_r->pc, cpu.pc);
-    return false;
-  }
-  return true;
+static void restart() {
+  /* Set the initial program counter. */
+  cpu.pc = RESET_VECTOR;
+
+  /* The zero register is always 0. */
+  cpu.gpr[0] = 0;
 }
 
-void isa_difftest_attach() {
+void init_isa() {
+  /* Load built-in image. */
+  memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
+
+  /* Initialize this virtual computer system. */
+  restart();
 }

@@ -5,19 +5,20 @@ BUILD_DIR = $(NPC_HOME)/build
 VSRCS = $(wildcard $(VSRC_DIR)/*.v)
 CSRCS = $(shell find $(CSRC_DIR) -name "*.cpp" -o -name "*.c" -o -name "*.cc" -o -name "*.cxx")
 
+GUEST_ISA ?= riscv32
 
 TOP_MODULE ?= top
 
-INCFLAGS = -I$(CSRC_DIR)/include 
+INCFLAGS = -I$(CSRC_DIR)/include -I$(CSRC_DIR)/src/isa/$(GUEST_ISA)/include
 
 CXXFLAGS = -Wall -O2 -mcmodel=medium
 CXXFLAGS += $(shell pkg-config --cflags verilator)
 CXXFLAGS += $(INCFLAGS)
 CXXFLAGS += -DTOP_MODULE=V$(TOP_MODULE)
 CXXFLAGS += -DTOP_MODULE_HEADER=V$(TOP_MODULE).h
-CXXFLAGS += -DCONFIG_DEVICE=1 -DCONFIG_HAS_SERIAL=1 -DCONFIG_HAS_TIMER=1
+CXXFLAGS += -DCONFIG_DEVICE=1 -DCONFIG_HAS_SERIAL=1 -DCONFIG_HAS_TIMER=1 -D__GUEST_ISA__=$(GUEST_ISA)
 
-LD_FLAGS =
+LDFLAGS = -lreadline
 
 VERILATOR = verilator
 VERILATOR_FLAGS = --cc --exe --build 
@@ -40,22 +41,23 @@ all: $(TARGET)
 $(TARGET): $(VSRCS) $(CSRCS)
 	@echo "Building Verilator simulation..."
 	@mkdir -p $(BUILD_DIR)
-	$(VERILATOR) $(VERILATOR_FLAGS) $(VSRCS) $(CSRCS) $(addprefix -CFLAGS , $(CXXFLAGS))
+	$(VERILATOR) $(VERILATOR_FLAGS) $(VSRCS) $(CSRCS) $(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS))
 
 sim: $(TARGET)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Running simulation..."
-	$(TARGET) $(IMG)
+	@echo "Args : $(ARGS)"
+	$(TARGET) $(ARGS) $(IMG)
 
 sim-trace: VERILATOR_FLAGS += --trace CXXFLAGS += -DWAVE
 sim-trace: clean $(TARGET)
 	@echo "Running simulation with trace..."
-	$(TARGET) $(IMG)
+	$(TARGET) $(ARGS) $(IMG)
 
 debug: CXXFLAGS += -g
 debug: clean $(TARGET)
 	@echo "Running simulation with debug info..."
-	gdb  --args $(TARGET) $(IMG)
+	gdb  --args $(TARGET) $(ARGS) $(IMG)
 
 lint: $(VSRCS)
 	@echo "Running Verilator lint check..."

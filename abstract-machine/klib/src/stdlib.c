@@ -5,7 +5,9 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 static unsigned long int next = 1;
 
+#if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
 static char *hbrk;
+#endif
 
 int rand(void) {
   // RAND_MAX assumed to be 32767
