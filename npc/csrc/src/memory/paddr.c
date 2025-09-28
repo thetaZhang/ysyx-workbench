@@ -1,11 +1,9 @@
 #include <memory/host.h>
 #include <memory/paddr.h>
 #include <device/mmio.h>
+#include <cpu/probe.h>
 
 #include <common.h>
-
-#include "svdpi.h"
-#include str(concat(TOP_MODULE,__Dpi.h))
 
 static uint8_t pmem[CONFIG_MSIZE] = {};
 
@@ -13,13 +11,13 @@ uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 static void out_of_bound(paddr_t addr) {
-  svSetScope(svGetScopeFromName("TOP.top.IF_u"));
-  uint32_t pc = pc_probe();
+  uint32_t pc = get_pc();
   panic("address = " FMT_PADDR " is out of bound of pmem [" FMT_PADDR ", " FMT_PADDR "] at pc = " FMT_WORD,
       addr, PMEM_LEFT, PMEM_RIGHT, pc);
 }
 
 extern "C" word_t pmem_read(paddr_t addr) {
+  IFDEF(CONFIG_MTRACE, log_write("paddr_read: addr = " FMT_PADDR ", len = %d\n", addr, len));
   if (likely(in_pmem(addr))) return host_read(guest_to_host(addr), 4);
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, 4));
   out_of_bound(addr);
@@ -27,6 +25,7 @@ extern "C" word_t pmem_read(paddr_t addr) {
 }
 
 extern "C" void pmem_write(paddr_t addr, word_t data, uint8_t mask) {
+  IFDEF(CONFIG_MTRACE, log_write("paddr_write: addr = " FMT_PADDR ", len = %d, data = " FMT_WORD "\n", addr, len, data));
   if (likely(in_pmem(addr))) {
     for (int i = 0; i < sizeof(word_t)/sizeof(uint8_t); i++) {
       if (mask & (1 << i)) {

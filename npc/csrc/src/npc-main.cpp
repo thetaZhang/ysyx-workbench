@@ -17,8 +17,8 @@ void deinit_cpu();
 
 
 int main(int argc, char** argv){
-  init_cpu(argc, argv);
   init_monitor(argc, argv);
+  init_cpu(argc, argv); // in this function, the memory will be read, but memory reset in init_monitor(), so init_monitor should be called first
   sdb_mainloop();
   deinit_cpu();
 	// VerilatedContext* contextp = new VerilatedContext;

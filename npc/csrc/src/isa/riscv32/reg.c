@@ -24,9 +24,8 @@ const char *regs[] = {
 };
 
 void isa_reg_display() {
-  svSetScope(svGetScopeFromName("TOP.top.ID_u.regfile_u"));
   for (int i = 0; i < ARRLEN(regs); i++) {
-    word_t reg_val = reg_probe(i);
+    word_t reg_val = get_reg(i);
     printf("%-15s 0x%08x      %u\n", regs[i], reg_val, reg_val);
   }
 }
@@ -38,12 +37,11 @@ void isa_reg_get_name(int idx, char *s){
 
 word_t isa_reg_str2val(const char *s, bool *success) {
   //printf("input reg name: %s\n", s);
-  svSetScope(svGetScopeFromName("TOP.top.ID_u.regfile_u"));
   for (int i = 0; i < ARRLEN(regs); i++) {
     if (strcmp(s, regs[i]) == 0) {
       *success = true;
       //printf("get reg\n");
-      word_t reg_val = reg_probe(i);
+      word_t reg_val = get_reg(i);
       return reg_val;
     }
   }

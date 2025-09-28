@@ -18,6 +18,40 @@
 extern uint64_t g_nr_guest_inst;
 
 #ifndef CONFIG_TARGET_AM
+
+#ifdef CONFIG_ITRACE
+
+static IRingBuf iringbuf = {
+  .length = 16,
+  .start = 0,
+  .end = 0,
+};
+
+void iringbuf_push(char* logbuf){
+  if(iringbuf.end == iringbuf.start){
+    iringbuf.start = (iringbuf.start + 1) % iringbuf.length;
+  }
+  strcpy(iringbuf.buf[iringbuf.end], logbuf);
+  iringbuf.end = (iringbuf.end + 1) % iringbuf.length;
+
+}
+
+void iringbuf_display(){
+  for (int i = 0;i < iringbuf.length;i++){
+    int idx = (iringbuf.start + i) % iringbuf.length;
+    printf("%s\n", iringbuf.buf[idx]);
+  }
+}
+
+void iringbuf_free(){
+  for (int i = 0;i < iringbuf.length;i++){
+    free(iringbuf.buf[i]);
+  }
+  free(iringbuf.buf);
+}
+
+#endif
+
 FILE *log_fp = NULL;
 
 void init_log(const char *log_file) {
@@ -28,6 +62,15 @@ void init_log(const char *log_file) {
     log_fp = fp;
   }
   Log("Log is written to %s", log_file ? log_file : "stdout");
+#ifdef CONFIG_ITRACE
+  iringbuf.buf = (char**)malloc(sizeof(char*) * iringbuf.length);
+  Assert(iringbuf.buf, "Can not malloc for instruction ring buffer");
+  for (int i = 0;i < iringbuf.length;i++){
+    iringbuf.buf[i] = (char*)malloc(sizeof(char) * 128);
+    Assert(iringbuf.buf[i], "Can not malloc for instruction ring buffer");
+    memset(iringbuf.buf[i], 0, sizeof(char) * 128);
+  }
+#endif
 }
 
 bool log_enable() {

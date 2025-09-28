@@ -32,7 +32,11 @@ module top (
   wire  [`MEM_MODE_WIDTH - 1 : 0] mem_width;
 
 
+  export "DPI-C" function inst_probe;
 
+  function int unsigned inst_probe();
+    return inst_in;
+  endfunction
 
   // inst_mem
   InstMem inst_mem_u (

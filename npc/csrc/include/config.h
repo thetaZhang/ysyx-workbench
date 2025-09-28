@@ -1,6 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define CONFIG_ISA_riscv 1
 
 #define CONFIG_MSIZE 0x8000000
 #define CONFIG_MBASE 0x80000000
@@ -9,5 +10,17 @@
 #define CONFIG_SERIAL_MMIO 0x10000000
 
 // #define CONFIG_ITRACE 1
+#define CONFIG_WATCHPOINT 1
+#define CONFIG_ITRACE 1
+#define CONFIG_ITRACE_COND 1
+#define ITRACE_COND 1
+
+#define CONFIG_MTRACE 1
+
+// #define CONFIG_DEVICE 1 
+// #define CONFIG_HAS_SERIAL 1
+// #define CONFIG_HAS_TIMER 1
+
+
 
 #endif

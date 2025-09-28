@@ -9,16 +9,25 @@ GUEST_ISA ?= riscv32
 
 TOP_MODULE ?= top
 
+TIME_UNIT_ns ?= 1
+TIME_PRECISION_ps ?= 10
+
+TARGET = $(BUILD_DIR)/V$(TOP_MODULE)
+
+LIBCAPSTONE = $(NEMU_HOME)/tools/capstone/repo/libcapstone.so.5
+
+
 INCFLAGS = -I$(CSRC_DIR)/include -I$(CSRC_DIR)/src/isa/$(GUEST_ISA)/include
+INCFLAGS += -I$(NEMU_HOME)/tools/capstone/repo/include
 
 CXXFLAGS = -Wall -O2 -mcmodel=medium
 CXXFLAGS += $(shell pkg-config --cflags verilator)
 CXXFLAGS += $(INCFLAGS)
 CXXFLAGS += -DTOP_MODULE=V$(TOP_MODULE)
 CXXFLAGS += -DTOP_MODULE_HEADER=V$(TOP_MODULE).h
-CXXFLAGS += -DCONFIG_DEVICE=1 -DCONFIG_HAS_SERIAL=1 -DCONFIG_HAS_TIMER=1 -D__GUEST_ISA__=$(GUEST_ISA)
+CXXFLAGS += -D__GUEST_ISA__=$(GUEST_ISA) -DTIME_PRECISION_ps=$(TIME_PRECISION_ps) -DCAPSTONE_SO_PATH=$(LIBCAPSTONE)
 
-LDFLAGS = -lreadline
+LDFLAGS = -lreadline -ldl
 
 VERILATOR = verilator
 VERILATOR_FLAGS = --cc --exe --build 
@@ -26,6 +35,7 @@ VERILATOR_FLAGS += -Wall -Wno-DECLFILENAME
 VERILATOR_FLAGS += --top-module $(TOP_MODULE)
 VERILATOR_FLAGS += -Mdir $(BUILD_DIR)
 VERILATOR_FLAGS += -I$(VSRC_DIR)
+VERILATOR_FLAGS += --timescale-override $(TIME_UNIT_ns)ns/$(TIME_PRECISION_ps)ps
 #VERILATOR_FLAGS += -CFLAGS "$(CXXFLAGS)"
 
 LINT_FLAGS = --lint-only -Wall
@@ -34,14 +44,21 @@ LINT_FLAGS += -I$(VSRC_DIR)
 #LINT_FLAGS += -CFLAGS "$(CXXFLAGS)"
 
 
-TARGET = $(BUILD_DIR)/V$(TOP_MODULE)
+
+
+
 
 all: $(TARGET)
 
-$(TARGET): $(VSRCS) $(CSRCS)
+$(TARGET): $(VSRCS) $(CSRCS) $(SO)
 	@echo "Building Verilator simulation..."
 	@mkdir -p $(BUILD_DIR)
 	$(VERILATOR) $(VERILATOR_FLAGS) $(VSRCS) $(CSRCS) $(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS))
+
+$(SO): $(LIBCAPSTONE)
+
+$(LIBCAPSTONE):
+	$(MAKE) -C $(NEMU_HOME)/tools/capstone
 
 sim: $(TARGET)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
@@ -49,8 +66,15 @@ sim: $(TARGET)
 	@echo "Args : $(ARGS)"
 	$(TARGET) $(ARGS) $(IMG)
 
-sim-trace: VERILATOR_FLAGS += --trace CXXFLAGS += -DWAVE
+sim-trace: VERILATOR_FLAGS += --trace 
+sim-trace: CXXFLAGS += -DWAVE
 sim-trace: clean $(TARGET)
+	@echo "Running simulation with trace..."
+	$(TARGET) $(ARGS) $(IMG)
+
+sim-trace-fst: VERILATOR_FLAGS += --trace-fst 
+sim-trace-fst: CXXFLAGS += -DWAVE_FST
+sim-trace-fst: clean $(TARGET)
 	@echo "Running simulation with trace..."
 	$(TARGET) $(ARGS) $(IMG)
 

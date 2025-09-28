@@ -17,15 +17,14 @@
 #define __RISCV_REG_H__
 
 #include <common.h>
-#include "svdpi.h"
-#include str(concat(TOP_MODULE,__Dpi.h))
+#include <cpu/probe.h>
 
 static inline int check_reg_idx(int idx) {
   IFDEF(CONFIG_RT_CHECK, assert(idx >= 0 && idx < MUXDEF(CONFIG_RVE, 16, 32)));
   return idx;
 }
 
-#define gpr(idx) ({svSetScope(svGetScopeFromName("TOP.top.ID_u.regfile_u"));reg_probe(check_reg_idx(idx));})
+#define gpr(idx) (get_reg(check_reg_idx(idx)))
 
 static inline const char* reg_name(int idx) {
   extern const char* regs[];
