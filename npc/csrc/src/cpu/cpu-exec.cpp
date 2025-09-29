@@ -1,7 +1,7 @@
 #include <cpu/cpu.h>
 #include <cpu/decode.h>
 #include <cpu/probe.h>
-// #include <cpu/difftest.h>
+#include <cpu/difftest.h>
 #include <locale.h>
 #include <utils.h>
 
@@ -35,7 +35,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   
-  //IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+  IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 
 #ifdef CONFIG_WATCHPOINT
   if (wp_difftest()) {
@@ -50,6 +50,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc + sizeof(word_t)/sizeof(uint8_t);
   s->isa.inst = get_inst();
   tb->tick();
+  set_gpr(cpu.gpr);
   s->dnpc = get_pc();
   cpu.pc = s->dnpc;
 
@@ -153,6 +154,7 @@ extern "C" void npc_trap(){
 void init_cpu(int argc, char** argv){
   tb = new TestBench<TOP_MODULE>(argc, argv);
   tb->reset();
+  set_gpr(cpu.gpr);
 }
 
 void deinit_cpu(){

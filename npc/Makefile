@@ -15,7 +15,7 @@ TIME_PRECISION_ps ?= 10
 TARGET = $(BUILD_DIR)/V$(TOP_MODULE)
 
 LIBCAPSTONE = $(NEMU_HOME)/tools/capstone/repo/libcapstone.so.5
-
+LIBNEMU = $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
 
 INCFLAGS = -I$(CSRC_DIR)/include -I$(CSRC_DIR)/src/isa/$(GUEST_ISA)/include
 INCFLAGS += -I$(NEMU_HOME)/tools/capstone/repo/include
@@ -64,7 +64,7 @@ sim: $(TARGET)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Running simulation..."
 	@echo "Args : $(ARGS)"
-	$(TARGET) $(ARGS) $(IMG)
+	$(TARGET) $(ARGS) -d $(LIBNEMU) $(IMG)
 
 sim-trace: VERILATOR_FLAGS += --trace 
 sim-trace: CXXFLAGS += -DWAVE

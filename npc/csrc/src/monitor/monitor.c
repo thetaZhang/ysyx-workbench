@@ -7,6 +7,7 @@ void init_mem();
 void init_device();
 void init_sdb();
 void init_disasm();
+void init_difftest(char *ref_so_file, long img_size, int port);
 
 
 void sdb_set_batch_mode();
@@ -102,6 +103,8 @@ void init_monitor(int argc, char *argv[]) {
   /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();
 
+  /* Initialize differential testing. */
+  init_difftest(diff_so_file, img_size, difftest_port);
 
   /* Initialize the simple debugger. */
   init_sdb();

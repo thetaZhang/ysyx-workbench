@@ -19,3 +19,10 @@ word_t get_inst() {
   svSetScope(svGetScopeFromName("TOP.top"));
   return inst_probe();
 }
+
+void set_gpr(word_t* gpr) {
+  assert(gpr != NULL);
+  for (int i = 0;i < 32;i++){
+    gpr[i] = get_reg(i);
+  }
+}

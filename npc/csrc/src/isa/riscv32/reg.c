@@ -25,8 +25,7 @@ const char *regs[] = {
 
 void isa_reg_display() {
   for (int i = 0; i < ARRLEN(regs); i++) {
-    word_t reg_val = get_reg(i);
-    printf("%-15s 0x%08x      %u\n", regs[i], reg_val, reg_val);
+    printf("%-15s 0x%08x      %u\n", regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
 }
 
@@ -41,8 +40,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
     if (strcmp(s, regs[i]) == 0) {
       *success = true;
       //printf("get reg\n");
-      word_t reg_val = get_reg(i);
-      return reg_val;
+      return cpu.gpr[i];
     }
   }
   *success = false;
