@@ -34,6 +34,24 @@ extern NEMUState nemu_state;
 
 uint64_t get_time();
 
+// ----------- itrace ---------
+#ifdef CONFIG_ITRACE
+
+typedef struct IRingBuf{
+  char** buf;
+  int length;
+  int start;
+  int end;
+} IRingBuf;
+
+void iringbuf_push(char* logbuf);
+
+void iringbuf_display();
+
+void iringbuf_free();
+
+#endif
+
 // ----------- log -----------
 
 #define ANSI_FG_BLACK   "\33[1;30m"

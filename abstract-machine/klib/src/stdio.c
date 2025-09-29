@@ -5,16 +5,197 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
+
+static void _reverse(char *s, int len){
+  int i = 0, j = len - 1;
+  while (i < j){
+    char temp = s[i];
+    s[i] = s[j];
+    s[j] = temp;
+    i++;
+    j--;
+  }
+} 
+
+static int _itoa(int n, char *s) {
+  bool is_neg = false;
+  int i = 0;
+
+  if (n == 0) {
+    *s++ = '0';
+    *s = '\0';
+    return 1;
+  } else if (n < 0) {
+    n = -n;
+    is_neg = true;
+  }
+
+  while (n != 0){
+    int digit = n % 10;
+    s[i++] = '0' + digit;
+    n /= 10;
+  }
+
+  if (is_neg) {
+    s[i++] = '-';
+  }
+
+  _reverse(s, i);
+  s[i] = '\0';
+  return i;
+
+}
+
+static int _itoa_hex(unsigned int n, char *s, bool upper) {
+
+  int i = 0;
+
+  if (n == 0) {
+    *s++ = '0';
+    *s = '\0';
+    return 1;
+  }
+  while (n != 0){
+    unsigned int digit = n & 0xF;
+    s[i++] = (digit < 10) ? ('0' + digit) : ((upper ? 'A' : 'a') + (digit - 10));
+    n >>= 4;
+  }
+
+
+  _reverse(s, i);
+  s[i] = '\0';
+  return i;
+
+}
+
+
 int printf(const char *fmt, ...) {
-  panic("Not implemented");
+  va_list args;
+  va_start(args, fmt);
+  char str_buffer[1024];
+  int len = vsprintf(str_buffer, fmt, args);
+  va_end(args);
+  putstr(str_buffer);
+  return len;
+
 }
 
 int vsprintf(char *out, const char *fmt, va_list ap) {
-  panic("Not implemented");
+  int count = 0;
+  char buffer[32];
+   
+  while (*fmt != '\0'){
+    if (*fmt != '%'){
+      *out = *fmt;
+      out++;
+      count++;
+    }
+    else {
+      fmt++;
+      bool zero_pad = false;
+      int width = 0;
+      if (*fmt == '0') {
+        zero_pad = true;
+        fmt++;
+      }
+      while (*fmt >= '0' && *fmt <= '9') {
+        width = width * 10 + (*fmt - '0');
+        fmt++;
+      }
+      switch (*fmt) {
+        case 'd':{
+          int num = va_arg(ap, int);
+          int len = _itoa(num, buffer);
+          if (width > len){
+            int pad_len = width - len;
+            char pad_char = zero_pad ? '0' : ' ';
+            for (int i = 0; i < pad_len; i++){
+              *out = pad_char;
+              out++;
+              count++;
+            }
+          }
+
+          for (int i = 0; i < len; i++){
+            *out = buffer[i];
+            out++;
+            count++;
+          }
+          break;
+        }
+        case 'x':
+        case 'X':{
+          int num = va_arg(ap, int);
+          bool upper = (*fmt == 'X');
+          int len = _itoa_hex(num, buffer, upper);
+          if (width > len){
+            int pad_len = width - len;
+            char pad_char = zero_pad ? '0' : ' ';
+            for (int i = 0; i < pad_len; i++){
+              *out = pad_char;
+              out++;
+              count++;
+            }
+          }
+
+          for (int i = 0; i < len; i++){
+            *out = buffer[i];
+            out++;
+            count++;
+          }
+          break;
+        }
+        case 'c':{
+          char ch = (char)va_arg(ap, int); // args will be automatically promoted to int
+          int pad_len = width > 1 ? width - 1 : 0;
+          for (int i = 0; i < pad_len; i++){
+            *out = ' ';
+            out++;
+            count++;
+          }
+          *out = ch;
+          out++;
+          count++;
+          break;
+        }
+        case 's':{
+          const char *str = va_arg(ap, const char *);
+          while (*str != '\0'){
+            *out = *str;
+            out++;
+            str++;
+            count++;
+          }
+          break;
+        }
+        default:{
+          *out = '%';
+          out++;
+          *out = *fmt;
+          out++;
+          count+=2;
+          break;
+        }
+      }
+    }
+
+    fmt++;
+  }
+  *out = '\0';
+  return count;
 }
 
+
+
 int sprintf(char *out, const char *fmt, ...) {
-  panic("Not implemented");
+  va_list args;
+  va_start(args, fmt);
+  int count = 0;
+
+  count = vsprintf(out, fmt, args);
+  
+  return count;
+
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
