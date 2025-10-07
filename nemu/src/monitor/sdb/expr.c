@@ -52,7 +52,7 @@ static struct rule {
   {"\\(", '('},        // left parenthesis
   {"\\)", ')'},        // right parenthesis
   {"\\b[0-9]+\\b", TK_NUM},     // number (0-9)
-  {"\\$\\$?0|\\$(ra|[sgt]p|t[0-6]|a[0-7]|s([0-9]|1[0-1])|x([0-9]|1[0-9]|2[0-9]|31))", TK_REG},
+  {"\\$\\$?0|\\$(pc|ra|[sgt]p|t[0-6]|a[0-7]|s([0-9]|1[0-1])|x([0-9]|1[0-9]|2[0-9]|31))", TK_REG},
   {"\\b0[xX][0-9a-fA-F]+\\b", TK_HEX}, // hexadecimal number
 };
 

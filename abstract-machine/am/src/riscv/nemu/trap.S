@@ -40,8 +40,9 @@ f(30) f(31)
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
-  addi sp, sp, -CONTEXT_SIZE
+  addi sp, sp, -CONTEXT_SIZE //这里是先一次性下移了再往上填
 
+  //here macros are defined in this file up, need look
   MAP(REGS, PUSH)
 
   csrr t0, mcause

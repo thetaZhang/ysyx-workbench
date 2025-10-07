@@ -25,6 +25,10 @@ static inline int check_reg_idx(int idx) {
 
 #define gpr(idx) (cpu.gpr[check_reg_idx(idx)])
 
+word_t* isa_reg_csr(int idx);
+
+#define csr(i) *isa_reg_csr(i)
+
 static inline const char* reg_name(int idx) {
   extern const char* regs[];
   return regs[check_reg_idx(idx)];

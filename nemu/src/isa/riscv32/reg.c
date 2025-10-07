@@ -29,6 +29,17 @@ void isa_reg_display() {
   }
 }
 
+word_t* isa_reg_csr(int idx) {
+  switch (idx) {
+    case 0x305: return &cpu.csr.mtvec;
+    case 0x341: return &cpu.csr.mepc;
+    case 0x342: return &cpu.csr.mcause;
+    case 0x300: return &cpu.csr.mstatus;
+    default: panic("Unknown csr");
+  }
+  return NULL;
+}
+
 void isa_reg_get_name(int idx, char *s){
   assert(s != NULL);
   strcpy(s, regs[check_reg_idx(idx)]);
@@ -42,6 +53,10 @@ word_t isa_reg_str2val(const char *s, bool *success) {
       //printf("get reg\n");
       return cpu.gpr[i];
     }
+  }
+  if (strcmp(s, "pc") == 0) {
+    *success = true;
+    return cpu.pc;
   }
   *success = false;
   return 0;

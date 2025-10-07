@@ -20,7 +20,14 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
    * Then return the address of the interrupt/exception vector.
    */
 
-  return 0;
+  //IFDEF(CONFIG_ETRACE, printf("E: mcause = " FMT_WORD " mstatus = " FMT_WORD " mepc = " FMT_WORD, cpu.csr.mcause, cpu.csr.mstatus, cpu.csr.mepc));
+  
+  IFDEF(CONFIG_ETRACE, log_write("E: mcause = " FMT_WORD " mstatus = " FMT_WORD " mepc = " FMT_WORD, cpu.csr.mcause, cpu.csr.mstatus, cpu.csr.mepc));
+  
+  cpu.csr.mepc = epc;
+  cpu.csr.mcause = NO;
+  
+  return cpu.csr.mtvec;
 }
 
 word_t isa_query_intr() {
