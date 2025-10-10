@@ -2,7 +2,6 @@
 `include "DPI-C.vh"
 module DataMem(
   input                        clk,
-  input                        rst_n,
   input  [`DATA_WIDTH - 1 : 0] data_wr_in,
   input  [`ADDR_WIDTH - 1 : 0] data_addr_in,
   input                        we_in,
@@ -12,20 +11,13 @@ module DataMem(
 );
 
 
-  always @(*) begin
-    if (ce_in && !we_in)
-      data_rd_out = pmem_read(data_addr_in);
-    else
-      data_rd_out = `DATA_WIDTH'b0;
-  end
-  
 
-  always @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin
-      // do nothing
+  always @(posedge clk) begin
+    if (ce_in) begin
+      data_rd_out <= (!we_in) ? pmem_read(data_addr_in) : `DATA_WIDTH'b0;
+      if (we_in)
+        pmem_write(data_addr_in, data_wr_in, wmask_in);
     end
-    else if (ce_in && we_in)
-      pmem_write(data_addr_in, data_wr_in, wmask_in);
   end
 
 endmodule

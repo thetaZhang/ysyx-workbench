@@ -1,8 +1,8 @@
 // register file
 `include "GlobalDefine.vh"
 module RegFile #(
-  parameter integer ADDR_WIDTH = 5,
-  parameter integer DATA_WIDTH = 32
+  parameter integer ADDR_WIDTH = `REG_ADDR_WIDTH,
+  parameter integer DATA_WIDTH = `DATA_WIDTH
 ) (
   input clk,
   input rst_n,

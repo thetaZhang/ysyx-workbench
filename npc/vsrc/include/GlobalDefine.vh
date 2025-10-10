@@ -76,9 +76,6 @@
 
 `define INST_EBREAK 32'h00100073
 
-// ALU input B src
-`define ALU_SRC_IMM 1'b0
-`define ALU_SRC_REG 1'b1
 
 //ALUopcodes
 `define ALU_OP_WIDTH 4
@@ -103,6 +100,17 @@
 `define PC_JUMP 2'b10
 `define PC_JUMP_R 2'b11
 
+
+// ALU src
+`define ALU_SRC_WIDTH 2
+
+// ALU input A src
+`define ALU_A_SRC_PC 1'b1
+`define ALU_A_SRC_REG 1'b0
+
+// ALU input B src
+`define ALU_B_SRC_IMM 1'b1
+`define ALU_B_SRC_REG 1'b0
 
 `define INIT_INST_ADDR 32'h8000_0000
 

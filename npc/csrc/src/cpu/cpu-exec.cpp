@@ -34,7 +34,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); iringbuf_push(_this->logbuf); }
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
-  
+  //printf("%08x\n", _this->pc);
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 
 #ifdef CONFIG_WATCHPOINT
@@ -45,11 +45,18 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
 }
 
+static void tb_exec_inst(){
+  while (1){
+    tb->tick();
+    if (get_if_state() == IF_WAIT) break;
+  }
+}
+
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc + sizeof(word_t)/sizeof(uint8_t);
   s->isa.inst = get_inst();
-  tb->tick();
+  tb_exec_inst();
   set_gpr(cpu.gpr);
   s->dnpc = get_pc();
   cpu.pc = s->dnpc;

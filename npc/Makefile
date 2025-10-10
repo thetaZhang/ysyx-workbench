@@ -2,7 +2,9 @@ VSRC_DIR = $(NPC_HOME)/vsrc
 CSRC_DIR = $(NPC_HOME)/csrc
 BUILD_DIR = $(NPC_HOME)/build
 
-VSRCS = $(wildcard $(VSRC_DIR)/*.v)
+VINC_DIR = $(VSRC_DIR)/include
+
+VSRCS = $(shell find $(VSRC_DIR ) -name "*.v" )
 CSRCS = $(shell find $(CSRC_DIR) -name "*.cpp" -o -name "*.c" -o -name "*.cc" -o -name "*.cxx")
 
 GUEST_ISA ?= riscv32
@@ -34,7 +36,7 @@ VERILATOR_FLAGS = --cc --exe --build
 VERILATOR_FLAGS += -Wall -Wno-DECLFILENAME
 VERILATOR_FLAGS += --top-module $(TOP_MODULE)
 VERILATOR_FLAGS += -Mdir $(BUILD_DIR)
-VERILATOR_FLAGS += -I$(VSRC_DIR)
+VERILATOR_FLAGS += -I$(VINC_DIR)
 VERILATOR_FLAGS += --timescale-override $(TIME_UNIT_ns)ns/$(TIME_PRECISION_ps)ps
 #VERILATOR_FLAGS += -CFLAGS "$(CXXFLAGS)"
 
