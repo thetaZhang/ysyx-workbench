@@ -48,7 +48,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 static void tb_exec_inst(){
   while (1){
     tb->tick();
-    if (get_if_state() == IF_WAIT) break;
+    if (get_if_state() == IF_IDLE) break;
   }
 }
 

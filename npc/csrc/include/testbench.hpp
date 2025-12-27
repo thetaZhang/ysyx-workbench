@@ -40,6 +40,13 @@
     TB_TRACE_DUMP(); \
   } while (0)
 
+#define HALF_PERIOD(...) \
+  do {   \
+    contextPtr->timeInc(CLOCK_STEP); \
+    __VA_ARGS__ \
+    modulePtr->eval(); \
+    TB_TRACE_DUMP(); \
+  } while (0)
 
 template <class MODULE>
 class TestBench {
@@ -141,14 +148,18 @@ void TestBench<MODULE>::tick() {
 template <class MODULE>
 void TestBench<MODULE>::reset() {
   // init state
-  modulePtr->rst_n = 0;
+  modulePtr->rst_n = 1;
   modulePtr->clk = 0;
   modulePtr->eval();
   TB_TRACE_DUMP();
 
+  HALF_PERIOD(modulePtr->rst_n = 0;);
+  HALF_PERIOD(modulePtr->rst_n = 1;);
+
+
 // reset cirkuit
-  posedge();
-  negedge([](auto& dut){ dut.rst_n = 1; });
+  // posedge([](auto& dut){ dut.rst_n = 1; });
+  // negedge();
 }
 
 

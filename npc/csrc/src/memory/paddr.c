@@ -17,6 +17,7 @@ static void out_of_bound(paddr_t addr) {
 }
 
 word_t pmem_read(paddr_t addr) {
+  // printf("pmem_read addr: " FMT_PADDR "\n", addr);
   IFDEF(CONFIG_MTRACE, log_write("paddr_read: addr = " FMT_PADDR ", len = %d\n", addr, 4));
   if (likely(in_pmem(addr))) return host_read(guest_to_host(addr), 4);
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, 4));
@@ -25,6 +26,7 @@ word_t pmem_read(paddr_t addr) {
 }
 
 void pmem_write(paddr_t addr, word_t data, uint8_t mask) {
+  // printf("pmem_write addr: " FMT_PADDR ", data: " FMT_WORD ", mask: %02x\n", addr, data, mask);
   int len = __builtin_popcount(mask & 0x0F);
   IFDEF(CONFIG_MTRACE, log_write("paddr_write: addr = " FMT_PADDR ", len = %d, data = " FMT_WORD "\n", addr, len, data));
   if (likely(in_pmem(addr))) {

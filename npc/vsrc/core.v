@@ -5,20 +5,23 @@ module core (
     input                        rst_n,
 
     // inst_mem
-    output                       inst_ce_out,
-    output [`ADDR_WIDTH - 1 : 0] pc,
-    input [`INST_WIDTH - 1 : 0] inst_in,
+    output                          ifu_reqValid,
+    output [`ADDR_WIDTH - 1 : 0]    ifu_addr,
+    input                           ifu_respValid,
+    input   [`DATA_WIDTH - 1 : 0]   ifu_rdata,
 
     //data_mem
-    output                        data_ce_out,
-    output                        data_we_out,
-    output [`ADDR_WIDTH - 1 : 0]  data_addr_out,
-    output [7 : 0]                data_wmask_out,
-    output [`DATA_WIDTH - 1 : 0]  data_wr_out,
-    input  [`DATA_WIDTH - 1 : 0]  data_rd_in
+    output        lsu_reqValid,
+    output [`ADDR_WIDTH - 1 :0] lsu_addr,
+    output        lsu_wen,
+    output [`DATA_WIDTH - 1 :0] lsu_wdata,
+    output [ 7:0] lsu_wmask,
+    input         lsu_respValid,
+    input  [`DATA_WIDTH - 1 :0] lsu_rdata
 );
 
   wire [  `ADDR_WIDTH - 1 : 0] pc_next;
+  wire [  `ADDR_WIDTH - 1 : 0] pc;
   wire [`PC_SEL_WIDTH - 1 : 0] pc_sel;
   wire [`ALU_OP_WIDTH - 1 : 0] alu_op;
   wire                         alu_zero_preset;
@@ -41,9 +44,12 @@ module core (
   wire [`REG_ADDR_WIDTH - 1 : 0] rs1_addr;
   wire [`REG_ADDR_WIDTH - 1 : 0] rs2_addr;
 
+  wire [  `DATA_WIDTH - 1 : 0]   inst_in;
   wire                           inst_en;
 
   wire mem_ready;
+  wire exec_ready;
+
 
   export "DPI-C" function inst_probe;
 
@@ -59,9 +65,13 @@ module core (
       .rst_n (rst_n),
       .pc_in (pc_next),
       .pc_out(pc),
-      .inst_ce_out(inst_ce_out),
+      .inst_out(inst_in),
       .inst_en_out(inst_en),
-      .mem_ready_in(mem_ready)
+      .exec_ready_in(exec_ready),
+      .ifu_reqValid(ifu_reqValid),
+      .ifu_addr(ifu_addr),
+      .ifu_respValid(ifu_respValid),
+      .ifu_rdata(ifu_rdata)
   );
 
 
@@ -91,7 +101,7 @@ module core (
       .clk  (clk),
       .rst_n(rst_n),
 
-      .reg_we_in(reg_we),
+      .reg_we_in(reg_we && exec_ready),
       .addr_wr  (rd_addr),
       .data_wr  (rd_data),
 
@@ -129,12 +139,13 @@ module core (
       .mem_write_in  (mem_write),
       .mem_read_in   (mem_read),
       .mem_ready_out (mem_ready),
-      .data_wr_out   (data_wr_out),
-      .data_addr_out (data_addr_out),
-      .we_out        (data_we_out),
-      .ce_out        (data_ce_out),
-      .wmask_out     (data_wmask_out),
-      .data_rd_in    (data_rd_in)
+      .lsu_reqValid  (lsu_reqValid),
+      .lsu_addr      (lsu_addr),
+      .lsu_wen       (lsu_wen),
+      .lsu_wdata     (lsu_wdata),
+      .lsu_wmask     (lsu_wmask),
+      .lsu_respValid (lsu_respValid),
+      .lsu_rdata     (lsu_rdata)
   );
 
   // WB
@@ -142,9 +153,12 @@ module core (
       .clk            (clk),
       .rst_n          (rst_n),
       .mem_to_reg_in  (mem_to_reg),
+      .mem_en_in      (mem_read || mem_write),
+      .mem_ready_in   (mem_ready),
       .mem_data_in    (mem_data),
       .ex_data_in     (ex_data_out),
-      .wb_data_out    (rd_data)
+      .wb_data_out    (rd_data),
+      .exec_ready_out (exec_ready)
   );
 
 

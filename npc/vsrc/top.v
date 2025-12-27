@@ -6,16 +6,20 @@ module top(
 
 
 
-  wire [  `ADDR_WIDTH - 1 : 0] pc;
-  wire  [`INST_WIDTH - 1 : 0] inst;
-  wire                         inst_ce;
+  wire                          ifu_reqValid;
+  wire [`ADDR_WIDTH - 1 : 0]    ifu_addr;
+  wire                          ifu_respValid;
+  wire  [`DATA_WIDTH - 1 : 0]   ifu_rdata;
 
-  wire  [`DATA_WIDTH - 1 : 0] data_rd;
-  wire  [`ADDR_WIDTH - 1 : 0] data_addr;
-  wire                        data_we;
-  wire                        data_ce;
-  wire  [7 : 0]               data_wmask;
-  wire  [`DATA_WIDTH - 1 : 0] data_wr;
+
+  wire                     lsu_reqValid;
+  wire [`ADDR_WIDTH - 1 : 0] lsu_addr;
+  wire                     lsu_wen;
+  wire [`DATA_WIDTH - 1 : 0] lsu_wdata;
+  wire [ 7:0]              lsu_wmask;
+  wire                     lsu_respValid;
+  wire  [`DATA_WIDTH - 1 : 0] lsu_rdata;
+
 
 
     core core_u (
@@ -23,37 +27,49 @@ module top(
       .rst_n         (rst_n),
 
       // inst_mem
-      .inst_ce_out   (inst_ce),
-      .pc            (pc),
-      .inst_in       (inst),
+      .ifu_reqValid (ifu_reqValid),
+      .ifu_addr     (ifu_addr),
+      .ifu_respValid(ifu_respValid),
+      .ifu_rdata    (ifu_rdata),
 
       //data_mem
-      .data_ce_out   (data_ce),
-      .data_we_out   (data_we),
-      .data_addr_out (data_addr),
-      .data_wmask_out(data_wmask),
-      .data_wr_out   (data_wr),
-      .data_rd_in   (data_rd)
+      .lsu_reqValid (lsu_reqValid),
+      .lsu_addr     (lsu_addr),
+      .lsu_wen      (lsu_wen),
+      .lsu_wdata    (lsu_wdata),
+      .lsu_wmask    (lsu_wmask),
+      .lsu_respValid(lsu_respValid),
+      .lsu_rdata    (lsu_rdata)
   );
 
   // inst_mem
-  InstMem inst_mem_u (
-      .clk          (clk),
-      .ce           (inst_ce),
-      .inst_addr_in (pc),
-      .inst_out     (inst)
+  Mem inst_mem_u (
+      .clk        (clk),
+      .rst_n      (rst_n),
+      .reqValid   (ifu_reqValid),
+      .addr       (ifu_addr),
+      .wen        (0),
+      .wdata      (0),
+      .wmask      (0),
+      .respValid  (ifu_respValid),
+      .rdata      (ifu_rdata)
+
   );
 
   // data_mem
-  DataMem data_mem_u (
-      .clk          (clk),
-      .ce_in        (data_ce),
-      .we_in        (data_we),
-      .data_addr_in (data_addr),
-      .data_wr_in   (data_wr),
-      .wmask_in     (data_wmask),
-      .data_rd_out  (data_rd)
+  Mem data_mem_u (
+      .clk        (clk),
+      .rst_n      (rst_n),
+      .reqValid   (lsu_reqValid),
+      .addr       (lsu_addr),
+      .wen        (lsu_wen),
+      .wdata      (lsu_wdata),
+      .wmask      (lsu_wmask),
+      .respValid  (lsu_respValid),
+      .rdata      (lsu_rdata)
+
   );
+
 
 
 endmodule

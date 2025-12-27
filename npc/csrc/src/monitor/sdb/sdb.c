@@ -139,6 +139,7 @@ static int cmd_p(char *args) {
   }
   else {
     printf("%u\n", result);
+    printf("0x%#x\n", result);
   }
 
   return 0;
